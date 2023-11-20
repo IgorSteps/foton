@@ -14,7 +14,7 @@
     <None Include="Makefile" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\renderer\renderer.cpp" />
+    <ClCompile Include="src\renderer\renderer.cpp" />
     <ClCompile Include="src\core\ray.cpp" />
     <ClCompile Include="src\utils\colour.cpp" />
     <ClCompile Include="src\main.cpp" />
