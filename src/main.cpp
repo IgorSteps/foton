@@ -9,5 +9,5 @@ int main() {
     
     // Render
     Renderer r(image, camera);
-    r.Render(image.Height(), image.Width());
+    r.Render();
 }
