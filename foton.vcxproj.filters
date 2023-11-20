@@ -5,5 +5,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\utils\colour.cpp" />
+    <ClCompile Include="src\core\ray.cpp" />
+    <ClCompile Include="include\renderer\renderer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\core\ray.h" />
+    <ClInclude Include="include\utils\colour.h" />
+    <ClInclude Include="include\core\camera.h" />
+    <ClInclude Include="include\core\image.h" />
+    <ClInclude Include="include\renderer\renderer.h" />
   </ItemGroup>
 </Project>
