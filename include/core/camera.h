@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
+#include "cuda_runtime.h"
 
 class Camera {
 public:
@@ -29,23 +30,26 @@ public:
         auto viewport_upper_left = m_CameraCenter - glm::vec3(0.0f, 0.0f, m_FocalLength) - viewport_u / 2.0f - viewport_v / 2.0f;
         m_UpperLeftPxl = viewport_upper_left + 0.5f * (m_PixelDeltaU + m_PixelDeltaV);
     }
-
+    __host__ __device__
     glm::vec3 Center() const 
     {
         return m_CameraCenter;
     }
 
-    glm::vec3 PixelDeltaU() const 
+    __host__ __device__
+     glm::vec3 PixelDeltaU() const
     {
         return m_PixelDeltaU;
     }
 
-    glm::vec3 PixelDeltaV() const
+    __host__ __device__
+        glm::vec3 PixelDeltaV() const
     {
         return m_PixelDeltaV;
     }
 
-    glm::vec3 UpperLeftPixel() const 
+    __host__ __device__
+        glm::vec3 UpperLeftPixel() const
     {
         return m_UpperLeftPxl;
     }

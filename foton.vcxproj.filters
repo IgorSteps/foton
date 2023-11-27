@@ -7,7 +7,8 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\utils\colour.cpp" />
     <ClCompile Include="src\core\ray.cpp" />
-    <ClCompile Include="include\renderer\renderer.cpp" />
+    <ClCompile Include="src\geometry\sphere.cpp" />
+    <ClCompile Include="src\renderer\renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core\ray.h" />
@@ -15,5 +16,10 @@
     <ClInclude Include="include\core\camera.h" />
     <ClInclude Include="include\core\image.h" />
     <ClInclude Include="include\renderer\renderer.h" />
+    <ClInclude Include="include\geometry\sphere.h" />
+    <ClInclude Include="include\cuda\renderer.cuh" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\cuda\renderKernel.cu" />
   </ItemGroup>
 </Project>

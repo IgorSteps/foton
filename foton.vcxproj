@@ -21,12 +21,16 @@
     <ClCompile Include="src\main.cpp" />
     <ClInclude Include="include\core\camera.h" />
     <ClInclude Include="include\core\image.h" />
+    <ClInclude Include="include\cuda\renderer.cuh" />
     <ClInclude Include="include\geometry\sphere.h" />
     <ClInclude Include="include\renderer\renderer.h" />
     <ClInclude Include="include\utils\colour.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core\ray.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\cuda\renderKernel.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1606CED4-93C9-4FA7-AE06-2425D9952D4C}</ProjectGuid>
