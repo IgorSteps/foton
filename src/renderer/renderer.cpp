@@ -19,15 +19,18 @@ void Renderer::Render()
     cudaMemcpy(h_Output, d_Output, imageWidth * imageHeight * sizeof(glm::vec3), cudaMemcpyDeviceToHost);
 
     std::cout << "P3\n" << imageWidth << " " << imageHeight << "\n255\n";
-    for (int j = 0; j < imageHeight; ++j) {
+    for (int j = 0; j < imageHeight; ++j) 
+    {
         std::clog << "\rScanlines remaining: " << (imageHeight - j) << ' ' << std::flush;
-        for (int i = 0; i < imageWidth; ++i) {
+        for (int i = 0; i < imageWidth; ++i) 
+        {
             WriteColour(std::cout, h_Output[j * imageWidth + i]);
         }
     }
 
     delete[] h_Output;
     cudaFree(d_Output);
+
     std::clog << "Done\n";
 }
 

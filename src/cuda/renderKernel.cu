@@ -39,9 +39,8 @@ __global__ void RenderKernel(glm::vec3* output, int width, int height, Camera ca
 
 
 void Renderer::Render(glm::vec3* output, int width, int height, const Camera& camera, const Sphere& sphere) {
-    dim3 blockSize(16, 16);
-    dim3 gridSize((width + blockSize.x - 1) / blockSize.x,
-        (height + blockSize.y - 1) / blockSize.y);
+    dim3 blockSize(32, 32);
+    dim3 gridSize((width + blockSize.x - 1) / blockSize.x, (height + blockSize.y - 1) / blockSize.y);
 
     RenderKernel<<<gridSize,blockSize>>>(output, width, height, camera, sphere);
     cudaDeviceSynchronize(); 
