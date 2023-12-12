@@ -5,6 +5,7 @@
 #include <core/camera.h>
 #include <stdio.h>
 #include <renderer/renderer.h>
+#include <iostream>
 
 __device__ glm::vec3 CalculateRayColour(const Ray& r, const Sphere& s)
 {
