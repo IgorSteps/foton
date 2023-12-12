@@ -2,18 +2,19 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <utils/colour.h>
+#include <chrono> 
 
-
-void Renderer::Render()
+long long Renderer::Render()
 {
     int imageHeight = Renderer::m_Img.Height();
     int imageWidth = Renderer::m_Img.Width();
 
     std::cout << "P3\n" << imageWidth << " " << imageHeight << "\n255\n";
-
+    long long totalDuration = 0; // Variable to accumulate total duration
+    int count = 0; // Variable to count the number of calls
     for (int j = 0; j < imageHeight; ++j)
     {
-        std::clog << "\rScanlines remaining: " << (imageHeight - j) << ' ' << std::flush;
+       // std::clog << "\rScanlines remaining: " << (imageHeight - j) << ' ' << std::flush;
         for (int i = 0; i < imageWidth; ++i)
         {
             glm::vec3 pixelCenter = m_Camera.UpperLeftPixel() + (static_cast<float>(i) * m_Camera.PixelDeltaU()) + (static_cast<float>(j) * m_Camera.PixelDeltaV());
@@ -21,10 +22,23 @@ void Renderer::Render()
             Ray r(m_Camera.Center(), rayDirection);
 
             glm::vec3 pixelColour = CalculateRayColour(r);
+
+            auto start = std::chrono::high_resolution_clock::now();
             WriteColour(std::cout, pixelColour);
+            auto stop = std::chrono::high_resolution_clock::now();
+
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
+            totalDuration += duration;
+            ++count;
         }
     }
-    std::clog << "\rDone.                 \n";
+    /*long long averageDuration = count > 0 ? totalDuration / count : 0;
+    std::clog << "Average time taken by WriteColour: " << averageDuration << " microseconds" << std::endl;
+    std::clog << "Total time taken by all WriteColour calls: " << totalDuration << " microseconds" << std::endl;*/
+
+    //std::clog << "\rDone.                 \n";
+    ;
+    return totalDuration; 
 }
 
 // Linearly blend white and blue depending on the height of the y

@@ -6,7 +6,6 @@ using namespace std::chrono;
 
 int main()
 {
-    auto start = high_resolution_clock::now();
 
     // Image
     Image image = Image();
@@ -15,14 +14,17 @@ int main()
     // Sphere
     Sphere sphere(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f);
 
-    // Render
-    Renderer r(image, camera, sphere);
-    r.Render();
+    int numIterations = 10; // Set the number of iterations
+    long long totalAverageDuration = 0; // Variable to accumulate average durations
 
-    // After function call
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
-    // To get the value of duration use the count()
-    // member function on the duration object
-    std::clog << "Time taken: " << duration.count() << " microseconds" << std::flush;
+    for (int i = 0; i < numIterations; i++) {
+        Renderer r(image, camera, sphere);
+        long long averageDuration = r.Render();
+        totalAverageDuration += averageDuration;
+    }
+
+    long long overallAverage = totalAverageDuration / numIterations;
+    std::clog << "Overall average time taken by WriteColour: " << overallAverage << " microseconds" << std::flush;
+
+    return 0;
 }
