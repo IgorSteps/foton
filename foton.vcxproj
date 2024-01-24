@@ -14,19 +14,25 @@
     <None Include="Makefile" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\geometry\sphere.cpp" />
+    <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\raytracer\geometry\sphere.cpp" />
     <ClCompile Include="src\renderer\renderer.cpp" />
-    <ClCompile Include="src\core\ray.cpp" />
+    <ClCompile Include="src\raytracer\core\ray.cpp" />
+    <ClCompile Include="src\renderer\Window.cpp" />
     <ClCompile Include="src\utils\colour.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClInclude Include="include\core\camera.h" />
     <ClInclude Include="include\core\image.h" />
     <ClInclude Include="include\geometry\sphere.h" />
     <ClInclude Include="include\renderer\renderer.h" />
+    <ClInclude Include="include\renderer\Window.h" />
     <ClInclude Include="include\utils\colour.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core\ray.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\glfw\glfw3.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1606CED4-93C9-4FA7-AE06-2425D9952D4C}</ProjectGuid>
@@ -92,7 +98,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
