@@ -6,8 +6,11 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\utils\colour.cpp" />
-    <ClCompile Include="src\core\ray.cpp" />
-    <ClCompile Include="include\renderer\renderer.cpp" />
+    <ClCompile Include="src\raytracer\core\ray.cpp" />
+    <ClCompile Include="src\raytracer\geometry\sphere.cpp" />
+    <ClCompile Include="src\renderer\renderer.cpp" />
+    <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\renderer\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core\ray.h" />
@@ -15,5 +18,10 @@
     <ClInclude Include="include\core\camera.h" />
     <ClInclude Include="include\core\image.h" />
     <ClInclude Include="include\renderer\renderer.h" />
+    <ClInclude Include="include\geometry\sphere.h" />
+    <ClInclude Include="include\renderer\Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\glfw\glfw3.lib" />
   </ItemGroup>
 </Project>
