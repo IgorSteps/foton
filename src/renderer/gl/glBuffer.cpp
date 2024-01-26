@@ -58,7 +58,7 @@ void GLBuffer::Unbind()
 }
 
 /// <summary>
-/// Adds an attribute to the VAO and configures it.
+/// Add an attribute to the VAO and configure it.
 /// </summary>
 void GLBuffer::AddAttributeLocation(AttributeInfo& info)
 {
@@ -99,6 +99,9 @@ void GLBuffer::SetElementData(const std::vector<unsigned int>& indices) {
     PushBackElementData(indices);
 }
 
+/// <summary>
+/// Upload vertex and element data to the GPU.
+/// </summary>
 void GLBuffer::UploadData() 
 {
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
@@ -108,11 +111,17 @@ void GLBuffer::UploadData()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, _elementData.size() * sizeof(unsigned int), _elementData.data(), GL_STATIC_DRAW);
 }
 
+/// <summary>
+/// Draw the buffer.
+/// </summary>
 void GLBuffer::Draw()
 {
     glDrawElements(_mode, _elementData.size(), GL_UNSIGNED_INT, 0);
 }
 
+/// <summary>
+/// Returns the size (in bytes) of the data type.
+/// </summary>
 GLint GLBuffer::getTypeSize(GLenum dataType) const {
     switch (dataType) 
     {

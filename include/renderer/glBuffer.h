@@ -2,6 +2,9 @@
 #include <glad/glad.h>
 #include <vector>
 
+/// <summary>
+/// AttributeInfo struct stores data related to an vertex attribute.
+/// </summary>
 struct AttributeInfo
 {
 	GLuint location;
@@ -9,9 +12,16 @@ struct AttributeInfo
 	GLsizei offset;
 
 	AttributeInfo(GLuint location, GLint size, GLsizei offset)
-		: location(location), size(size), offset(offset) {}
+		: 
+		location(location),
+		size(size),
+		offset(offset) 
+	{}
 };
 
+/// <summary>
+/// GLBuffer class handles OpenGL buffers.
+/// </summary>
 class GLBuffer 
 {
 public:
@@ -24,6 +34,7 @@ public:
 	GLBuffer& operator=(const GLBuffer&) = delete;
 	GLBuffer(GLBuffer&&) = delete;
 	GLBuffer& operator=(GLBuffer&&) = delete;
+
 	void BindVAO();
 	void Bind(bool normalised);
 	void Unbind();
@@ -34,13 +45,13 @@ public:
 	void PushBackVertexData(const std::vector<float>& data);
 	void ClearVertexData();
 	void SetVertexData(const std::vector<float>& data);
-	void UploadData();
 
 	// For EBOs.
 	void PushBackElementData(const std::vector<unsigned int>& indices);
 	void ClearElementData();
 	void SetElementData(const std::vector<unsigned int>& indices);
 
+	void UploadData();
 	void Draw();
 
 private:
