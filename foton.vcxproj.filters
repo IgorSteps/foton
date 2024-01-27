@@ -11,6 +11,8 @@
     <ClCompile Include="src\renderer\renderer.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\renderer\Window.cpp" />
+    <ClCompile Include="src\renderer\gl\glBuffer.cpp" />
+    <ClCompile Include="src\renderer\Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core\ray.h" />
@@ -20,6 +22,8 @@
     <ClInclude Include="include\renderer\renderer.h" />
     <ClInclude Include="include\geometry\sphere.h" />
     <ClInclude Include="include\renderer\Window.h" />
+    <ClInclude Include="include\renderer\glBuffer.h" />
+    <ClInclude Include="include\renderer\Engine.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw\glfw3.lib" />

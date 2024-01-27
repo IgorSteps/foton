@@ -1,15 +1,10 @@
-#include <renderer/Window.h>
-#include <iostream>
+#include <renderer/Engine.h>
 
-int main() {
+int main()
+{
     try {
-        Window window(800, 600, "Foton Renderer");
-
-        while (!window.IsClosed()) {
-            // Render here
-
-            window.Update();
-        }
+        Engine engine;
+        engine.run();
     }
     catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
