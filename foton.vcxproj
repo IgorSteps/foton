@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -14,8 +14,10 @@
     <None Include="Makefile" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\renderer\Engine.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\raytracer\geometry\sphere.cpp" />
+    <ClCompile Include="src\renderer\gl\glBuffer.cpp" />
     <ClCompile Include="src\renderer\renderer.cpp" />
     <ClCompile Include="src\raytracer\core\ray.cpp" />
     <ClCompile Include="src\renderer\Window.cpp" />
@@ -24,6 +26,8 @@
     <ClInclude Include="include\core\camera.h" />
     <ClInclude Include="include\core\image.h" />
     <ClInclude Include="include\geometry\sphere.h" />
+    <ClInclude Include="include\renderer\Engine.h" />
+    <ClInclude Include="include\renderer\glBuffer.h" />
     <ClInclude Include="include\renderer\renderer.h" />
     <ClInclude Include="include\renderer\Window.h" />
     <ClInclude Include="include\utils\colour.h" />

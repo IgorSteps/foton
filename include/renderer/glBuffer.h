@@ -30,10 +30,10 @@ public:
 
 	// Disallow Move and Copy semantics, because it doesn't make sense for OpenGL buffers 
 	// as duplicating OpenGL buffers can lead to errors and undefined behavior.
-	GLBuffer(const GLBuffer&) = delete;
+	/*GLBuffer(const GLBuffer&) = delete;
 	GLBuffer& operator=(const GLBuffer&) = delete;
 	GLBuffer(GLBuffer&&) = delete;
-	GLBuffer& operator=(GLBuffer&&) = delete;
+	GLBuffer& operator=(GLBuffer&&) = delete;*/
 
 	void BindVAO();
 	void Bind(bool normalised);
