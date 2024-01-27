@@ -9,7 +9,7 @@ void Engine::run()
 {
     try {
         while (!window->IsClosed()) {
-            float dt = 2;// calculate delta time
+            float dt = 2;// TODO: calculate delta time
             update(dt);
             draw();
             window->Update();
@@ -22,7 +22,7 @@ void Engine::run()
 
 void Engine::init()
 {
-    window = std::make_unique<Window>(800, 600, "Foton Renderer");
+    window = std::make_unique<Window>(800, 600, "Foton");
 
     // Define vertex data for a triangle
     std::vector<float> vertices = {
