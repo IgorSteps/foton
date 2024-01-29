@@ -1,4 +1,4 @@
-#include "renderer/Engine.h"
+#include "engine/Engine.h"
 
 Engine::Engine()
 {
@@ -49,6 +49,9 @@ void Engine::init()
     // Upload data to the GPU
     buffer->UploadData();
     buffer->Unbind();
+
+    loadShaders();
+    _basicShader->Use();
 }
 
 void Engine::update(float dt)
@@ -62,4 +65,34 @@ void Engine::draw()
     buffer->Bind(false);
     buffer->Draw();
     buffer->Unbind();
+}
+
+void Engine::loadShaders()
+{
+    std::string vertexShaderSource = R"glsl(
+        #version 330 core
+        layout (location = 0) in vec3 aPos;
+
+        out vec4 vertexColor;
+
+        void main() {
+            gl_Position = vec4(aPos, 1.0);
+            vertexColor = vec4(0.5, 0.0, 0.0, 1.0);
+        }
+    )glsl";
+
+    std::string fragmentShaderSource = R"glsl(
+        #version 330 core
+        out vec4 FragColor;
+
+        in vec4 vertexColor;
+
+        void main() {
+            FragColor = vertexColor;
+        }
+    )glsl";
+
+    _basicShader = std::make_unique<Shader>("Basic");
+    _basicShader->Load(vertexShaderSource, fragmentShaderSource);
+
 }
