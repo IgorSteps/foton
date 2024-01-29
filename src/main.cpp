@@ -1,6 +1,6 @@
 #include <engine/Engine.h>
 
-int main()
+int main(int argc, char* argv[])
 {
     try {
         Engine engine;

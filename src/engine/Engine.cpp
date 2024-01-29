@@ -1,4 +1,9 @@
 #include "engine/Engine.h"
+#include <engine/File.h>
+#include <filesystem>
+
+
+
 
 Engine::Engine()
 {
@@ -69,28 +74,9 @@ void Engine::draw()
 
 void Engine::loadShaders()
 {
-    std::string vertexShaderSource = R"glsl(
-        #version 330 core
-        layout (location = 0) in vec3 aPos;
-
-        out vec4 vertexColor;
-
-        void main() {
-            gl_Position = vec4(aPos, 1.0);
-            vertexColor = vec4(0.5, 0.0, 0.0, 1.0);
-        }
-    )glsl";
-
-    std::string fragmentShaderSource = R"glsl(
-        #version 330 core
-        out vec4 FragColor;
-
-        in vec4 vertexColor;
-
-        void main() {
-            FragColor = vertexColor;
-        }
-    )glsl";
+    // Working dir is D/Projects/foton.
+    std::string vertexShaderSource = FileIO::ReadFile(".\\src\\engine\\gl\\shaders\\basicVertex.vert");
+    std::string fragmentShaderSource = FileIO::ReadFile(".\\src\\engine\\gl\\shaders\\basicFrag.frag");
 
     _basicShader = std::make_unique<Shader>("Basic");
     _basicShader->Load(vertexShaderSource, fragmentShaderSource);

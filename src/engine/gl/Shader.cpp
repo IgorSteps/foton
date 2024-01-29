@@ -13,7 +13,7 @@ Shader::~Shader()
 	glDeleteProgram(_program);
 }
 
-void Shader::Load(const std::string & vertexSource, const std::string& fragmentSource)
+void Shader::Load(const std::string& vertexSource, const std::string& fragmentSource)
 {
 	GLuint vertexShader = loadShader(vertexSource, GL_VERTEX_SHADER);
 	GLuint fragmentShader = loadShader(fragmentSource, GL_FRAGMENT_SHADER);
