@@ -12,24 +12,34 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
+    <Text Include="src\engine\gl\shaders\basicFrag.frag">
+      <FileType>Document</FileType>
+    </Text>
+    <Text Include="src\engine\gl\shaders\basicVertex.vert">
+      <FileType>Document</FileType>
+    </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\renderer\Engine.cpp" />
+    <ClCompile Include="src\engine\Engine.cpp" />
+    <ClCompile Include="src\engine\gl\Shader.cpp" />
+    <ClCompile Include="src\engine\io\File.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\raytracer\geometry\sphere.cpp" />
-    <ClCompile Include="src\renderer\gl\glBuffer.cpp" />
-    <ClCompile Include="src\renderer\renderer.cpp" />
+    <ClCompile Include="src\engine\gl\glBuffer.cpp" />
+    <ClCompile Include="src\engine\renderer.cpp" />
     <ClCompile Include="src\raytracer\core\ray.cpp" />
-    <ClCompile Include="src\renderer\Window.cpp" />
+    <ClCompile Include="src\engine\Window.cpp" />
     <ClCompile Include="src\utils\colour.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClInclude Include="include\core\camera.h" />
     <ClInclude Include="include\core\image.h" />
+    <ClInclude Include="include\engine\File.h" />
+    <ClInclude Include="include\engine\Shader.h" />
     <ClInclude Include="include\geometry\sphere.h" />
-    <ClInclude Include="include\renderer\Engine.h" />
-    <ClInclude Include="include\renderer\glBuffer.h" />
-    <ClInclude Include="include\renderer\renderer.h" />
-    <ClInclude Include="include\renderer\Window.h" />
+    <ClInclude Include="include\engine\Engine.h" />
+    <ClInclude Include="include\engine\glBuffer.h" />
+    <ClInclude Include="include\engine\renderer.h" />
+    <ClInclude Include="include\engine\Window.h" />
     <ClInclude Include="include\utils\colour.h" />
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>D:\Projects\foton\lib;D:\Projects\foton\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

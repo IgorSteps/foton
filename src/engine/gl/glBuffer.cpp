@@ -1,4 +1,4 @@
-#include <renderer/glBuffer.h>
+#include <engine/glBuffer.h>
 #include <stdexcept>
 
 GLBuffer::GLBuffer(GLenum dataType, GLenum mode)
