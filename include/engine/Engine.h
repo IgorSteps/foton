@@ -1,9 +1,9 @@
 #pragma once
 #include <memory>
 #include <iostream>
-#include <engine/glBuffer.h>
+#include <engine/gl/glBuffer.h>
 #include <engine/Window.h>
-#include <engine/Shader.h>
+#include <engine/gl/Shader.h>
 
 class Engine {
 public:
