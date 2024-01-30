@@ -29,6 +29,9 @@ void Engine::init()
 {
     window = std::make_unique<Window>(800, 600, "Foton");
 
+    loadShaders();
+    _basicShader->Use();
+
     // Define vertex data for a triangle
     std::vector<float> vertices = {
         -0.5f, -0.5f, 0.0f,
@@ -44,7 +47,7 @@ void Engine::init()
     buffer = std::make_unique<GLBuffer>(GL_FLOAT, GL_TRIANGLES);
 
     // Define attribute information
-    AttributeInfo positionAttrib(0, 3, 0);
+    AttributeInfo positionAttrib(_basicShader->GetAttributeLocation("aPos"), 3, 0);
     buffer->AddAttributeLocation(positionAttrib);
 
     // Set vertex and element data
@@ -55,8 +58,8 @@ void Engine::init()
     buffer->UploadData();
     buffer->Unbind();
 
-    loadShaders();
-    _basicShader->Use();
+
+
 }
 
 void Engine::update(float dt)
@@ -68,8 +71,10 @@ void Engine::draw()
 {
     // Render here
     buffer->Bind(false);
+    auto colorLocation = _basicShader->GetUniformLocation("myColor");
+    glUniform4f(colorLocation, 1.0f, 0.5f, 0.0f, 1.0f);
     buffer->Draw();
-    buffer->Unbind();
+    //buffer->Unbind();
 }
 
 void Engine::loadShaders()

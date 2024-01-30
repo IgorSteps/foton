@@ -14,6 +14,7 @@
     <ClCompile Include="src\engine\gl\glBuffer.cpp" />
     <ClCompile Include="src\engine\renderer.cpp" />
     <ClCompile Include="src\engine\Window.cpp" />
+    <ClCompile Include="src\engine\io\File.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core\ray.h" />
@@ -26,8 +27,13 @@
     <ClInclude Include="include\engine\glBuffer.h" />
     <ClInclude Include="include\engine\renderer.h" />
     <ClInclude Include="include\engine\Window.h" />
+    <ClInclude Include="include\engine\File.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw\glfw3.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\engine\gl\shaders\basicFrag.frag" />
+    <Text Include="src\engine\gl\shaders\basicVertex.vert" />
   </ItemGroup>
 </Project>
