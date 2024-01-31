@@ -22,6 +22,7 @@
   <ItemGroup>
     <ClCompile Include="src\engine\Engine.cpp" />
     <ClCompile Include="src\engine\gl\Shader.cpp" />
+    <ClCompile Include="src\engine\graphics\Sprite.cpp" />
     <ClCompile Include="src\engine\io\File.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\raytracer\geometry\sphere.cpp" />

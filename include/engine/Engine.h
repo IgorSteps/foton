@@ -4,7 +4,8 @@
 #include <engine/gl/glBuffer.h>
 #include <engine/Window.h>
 #include <engine/gl/Shader.h>
-
+#include <engine/graphics/Sprite.h>
+#include <glm/glm.hpp>
 class Engine {
 public:
 	Engine();
@@ -15,6 +16,7 @@ public:
 	void loadShaders();
 private:
 	std::unique_ptr<Window> window;
-	std::unique_ptr<GLBuffer> buffer;
+	std::unique_ptr<Sprite> _sprite;
 	std::unique_ptr<Shader> _basicShader;
+	glm::mat4 _projection;
 };
