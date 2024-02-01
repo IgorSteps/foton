@@ -17,13 +17,11 @@ void Sprite::Init()
 
     // top left corner at 0,0
     std::vector<float>  vertices = {
-      
-            // positions        
-             0.5f,  0.5f, 0.0f,  
-             0.5f, -0.5f, 0.0f,  
-            -0.5f, -0.5f, 0.0f,  
-            -0.5f,  0.5f, 0.0f,   
-
+        // positions        
+        0.5f,  0.5f, 0.0f,  
+        0.5f, -0.5f, 0.0f,  
+        -0.5f, -0.5f, 0.0f,  
+        -0.5f,  0.5f, 0.0f,   
     };
 
     std::vector<unsigned int> indices = {

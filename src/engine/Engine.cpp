@@ -43,12 +43,13 @@ void Engine::update(float dt)
 
 }
 
+// Render here
 void Engine::draw()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Render here
+    // colour
     auto colorLocation = _basicShader->GetUniformLocation("myColor");
     glUniform4f(colorLocation, 1.0f, 0.5f, 0.0f, 1.0f);
 
@@ -64,7 +65,7 @@ void Engine::draw()
     auto viewLocation = _basicShader->GetUniformLocation("u_view");
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
 
-    //// projection
+    // projection
     auto projectionLocation = _basicShader->GetUniformLocation("u_projection");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(_projection));
 
