@@ -34,8 +34,11 @@ void Engine::init()
 
     // Init.
     _projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-    _sprite = std::make_unique<Sprite>("Test sprite", 0.5f, 0.5f);
-    _sprite->Init();
+    /*_quadSprite = std::make_unique<QuadSprite>("Test quad", 0.5f, 0.5f);
+    _quadSprite->Init();*/
+
+    _sphereSprite = std::make_unique<SphereSprite>("Test sphere", 1.0f, 36, 18);
+    _sphereSprite->Init();
 }
 
 void Engine::update(float dt)
@@ -69,9 +72,8 @@ void Engine::draw()
     auto projectionLocation = _basicShader->GetUniformLocation("u_projection");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(_projection));
 
-
-
-    _sprite->Draw();
+    //_quadSprite->Draw();
+    _sphereSprite->Draw();
 }
 
 void Engine::loadShaders()

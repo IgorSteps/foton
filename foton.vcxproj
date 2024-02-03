@@ -22,7 +22,8 @@
   <ItemGroup>
     <ClCompile Include="src\engine\Engine.cpp" />
     <ClCompile Include="src\engine\gl\Shader.cpp" />
-    <ClCompile Include="src\engine\graphics\Sprite.cpp" />
+    <ClCompile Include="src\engine\graphics\QuadSprite.cpp" />
+    <ClCompile Include="src\engine\graphics\SphereSprite.cpp" />
     <ClCompile Include="src\engine\io\File.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\raytracer\geometry\sphere.cpp" />
@@ -34,6 +35,8 @@
     <ClCompile Include="src\main.cpp" />
     <ClInclude Include="include\core\camera.h" />
     <ClInclude Include="include\core\image.h" />
+    <ClInclude Include="include\engine\graphics\QuadSprite.h" />
+    <ClInclude Include="include\engine\graphics\SphereSprite.h" />
     <ClInclude Include="include\engine\io\File.h" />
     <ClInclude Include="include\engine\gl\Shader.h" />
     <ClInclude Include="include\engine\graphics\Sprite.h" />

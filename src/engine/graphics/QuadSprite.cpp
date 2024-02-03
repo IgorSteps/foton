@@ -1,21 +1,12 @@
-#include "engine/graphics/Sprite.h"
+#include "engine/graphics/QuadSprite.h"
 
-Sprite::Sprite(const std::string& name, float width, float height)
+QuadSprite::QuadSprite(const std::string& name, float width, float height) 
+    : Sprite(name, width, height)
+{}
+
+void QuadSprite::Init()
 {
-	_name = name;
-	_width = width;
-	_height = height;
-}
-
-Sprite::~Sprite()
-{
-    _buffer->~GLBuffer();
-}
-
-void Sprite::Init()
-{
-
-    // top left corner at 0,0
+    // top left corner at 0,0.
     std::vector<float>  vertices = {
         // positions        
         0.5f,  0.5f, 0.0f,  
@@ -45,11 +36,11 @@ void Sprite::Init()
     _buffer->Unbind();
 }
 
-void Sprite::Update(float dt)
+void QuadSprite::Update(float dt)
 {
 }
 
-void Sprite::Draw()
+void QuadSprite::Draw()
 {
     _buffer->Bind(false);
     _buffer->Draw();
