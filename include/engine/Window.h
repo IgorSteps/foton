@@ -9,11 +9,10 @@ public:
 	~Window();
     void Update();
     bool IsClosed() const;
-    void ResizeCallback(GLFWwindow* window, int width, int height);
+    static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
+
 private:
     GLFWwindow* _window;
     int _width, _height;
     std::string _title;
-
-    static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 };

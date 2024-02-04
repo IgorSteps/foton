@@ -11,12 +11,14 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\engine\Engine.cpp" />
     <ClCompile Include="src\engine\gl\Shader.cpp" />
-    <ClCompile Include="src\engine\gl\glBuffer.cpp" />
+    <ClCompile Include="src\engine\gl\GLBuffer.cpp" />
     <ClCompile Include="src\engine\renderer.cpp" />
     <ClCompile Include="src\engine\Window.cpp" />
     <ClCompile Include="src\engine\io\File.cpp" />
     <ClCompile Include="src\engine\graphics\QuadSprite.cpp" />
     <ClCompile Include="src\engine\graphics\SphereSprite.cpp" />
+    <ClCompile Include="src\engine\Camera.cpp" />
+    <ClCompile Include="src\engine\gl\GL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core\ray.h" />
@@ -30,9 +32,11 @@
     <ClInclude Include="include\engine\io\File.h" />
     <ClInclude Include="include\engine\gl\Shader.h" />
     <ClInclude Include="include\engine\graphics\Sprite.h" />
-    <ClInclude Include="include\engine\gl\glBuffer.h" />
+    <ClInclude Include="include\engine\gl\GLBuffer.h" />
     <ClInclude Include="include\engine\graphics\QuadSprite.h" />
     <ClInclude Include="include\engine\graphics\SphereSprite.h" />
+    <ClInclude Include="include\engine\Camera.h" />
+    <ClInclude Include="include\engine\gl\GL.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw\glfw3.lib" />

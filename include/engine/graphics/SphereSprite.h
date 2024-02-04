@@ -1,5 +1,6 @@
 #pragma once
 #include <engine/graphics/Sprite.h>
+#include <engine/gl/Shader.h>
 
 class SphereSprite : public Sprite
 {
@@ -7,7 +8,7 @@ public:
 	SphereSprite(const std::string& name, float radius, int segments, int stacks);
 	virtual void Init() override;
 	virtual void Update(float dt) override;
-	virtual void Draw() override;
+	virtual void Draw(std::unique_ptr<Shader>& shader) override;
 private:
 	float _radius;
 	int _segments, _stacks;

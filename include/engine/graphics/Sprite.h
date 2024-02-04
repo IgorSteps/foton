@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 #include <glm/glm.hpp>
-
+#include <engine/gl/Shader.h>
 class Sprite
 {
 public:
@@ -11,8 +11,8 @@ public:
 	virtual ~Sprite() {};
 	virtual void Init() = 0;
 	virtual void Update(float dt) = 0;
-	virtual void Draw() = 0;
-	glm::vec3 position = glm::vec3(1.0f, 0.0f, 1.0f);
+	virtual void Draw(std::unique_ptr<Shader>& shader) = 0;
+	glm::vec3 position = glm::vec3(0.0f, 0.0f, 1.0f);
 
 protected:
 	float _width, _height;

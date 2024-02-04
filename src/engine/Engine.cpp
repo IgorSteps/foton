@@ -26,7 +26,6 @@ void Engine::run()
 
 void Engine::init()
 {
-
     window = std::make_unique<Window>(800, 600, "Foton");
 
     loadShaders();
@@ -34,8 +33,8 @@ void Engine::init()
 
     // Init.
     _projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-    /*_quadSprite = std::make_unique<QuadSprite>("Test quad", 0.5f, 0.5f);
-    _quadSprite->Init();*/
+    _quadSprite = std::make_unique<QuadSprite>("Test quad", 0.5f, 0.5f);
+    _quadSprite->Init();
 
     _sphereSprite = std::make_unique<SphereSprite>("Test sphere", 1.0f, 36, 18);
     _sphereSprite->Init();
@@ -52,19 +51,12 @@ void Engine::draw()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // colour
-    auto colorLocation = _basicShader->GetUniformLocation("myColor");
-    glUniform4f(colorLocation, 1.0f, 0.5f, 0.0f, 1.0f);
-
-    // model
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, _sphereSprite->position);
-    auto modelLocation = _basicShader->GetUniformLocation("u_model");
-    glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-
     //view
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -6.0f));
+    glm::mat4 view = glm::lookAt(
+        glm::vec3(0.0f, 0.0f, 3.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f)
+    );
     auto viewLocation = _basicShader->GetUniformLocation("u_view");
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
 
@@ -72,8 +64,9 @@ void Engine::draw()
     auto projectionLocation = _basicShader->GetUniformLocation("u_projection");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(_projection));
 
-    //_quadSprite->Draw();
-    _sphereSprite->Draw();
+    _quadSprite->Draw(_basicShader);
+    _sphereSprite->Draw(_basicShader);
+
 }
 
 void Engine::loadShaders()
