@@ -20,6 +20,7 @@
     <ClCompile Include="src\engine\Camera.cpp" />
     <ClCompile Include="src\engine\gl\GL.cpp" />
     <ClCompile Include="src\engine\message\EventQueue.cpp" />
+    <ClCompile Include="src\engine\Ray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core\ray.h" />
@@ -40,6 +41,7 @@
     <ClInclude Include="include\engine\gl\GL.h" />
     <ClInclude Include="include\engine\message\Event.h" />
     <ClInclude Include="include\engine\message\EventQueue.h" />
+    <ClInclude Include="include\engine\Ray.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw\glfw3.lib" />
