@@ -10,6 +10,9 @@ using std::chrono::duration_cast;
 using std::chrono::duration;
 using std::chrono::seconds;
 
+const unsigned int SCR_WIDTH = 1200;
+const unsigned int SCR_HEIGHT = 800;
+
 Engine::Engine()
 {
     init();
@@ -32,21 +35,23 @@ void Engine::run()
             window->Update();
         }
     }
-    catch (const std::exception& e) {
+    catch (const std::exception& e) 
+    {
         std::cerr << e.what() << std::endl;
     }
 }
 
 void Engine::init()
 {
-    window = std::make_unique<Window>(800, 600, "Foton");
+    window = std::make_unique<Window>(SCR_WIDTH, SCR_HEIGHT, "Foton");
     _camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
     
     loadShaders();
     _basicShader->Use();
 
     // Init.
-    _projection = glm::perspective(glm::radians(_camera->GetZoom()), 800.0f / 600.0f, 0.1f, 100.0f);
+    // TODO: Set aspect ration based on viewport width & height.
+    _projection = glm::perspective(glm::radians(_camera->GetZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     _quadSprite = std::make_unique<QuadSprite>("Test quad", 0.5f, 0.5f);
     _quadSprite->Init();
 
@@ -63,7 +68,8 @@ void Engine::update(float dt)
 void Engine::draw()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
     // view
     glm::mat4 view = _camera->GetViewMatrix();

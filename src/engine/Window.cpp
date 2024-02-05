@@ -30,22 +30,26 @@ Window::Window(int width, int height, const std::string& title)
     glfwSetScrollCallback(_window, ScrollCallback);
 }
 
-Window::~Window() {
+Window::~Window() 
+{
     glfwDestroyWindow(_window);
     glfwTerminate();
 }
 
-void Window::Update() {
+void Window::Update() 
+{
     ProcessInput(_window);
     glfwSwapBuffers(_window);
     glfwPollEvents();
 }
 
-bool Window::IsClosed() const {
+bool Window::IsClosed() const 
+{
     return glfwWindowShouldClose(_window) != 0;
 }
 
-void Window::FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
+void Window::FramebufferSizeCallback(GLFWwindow* window, int width, int height) 
+{
     glViewport(0, 0, width, height);
 }
 
