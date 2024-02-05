@@ -27,6 +27,7 @@
     <ClCompile Include="src\engine\graphics\QuadSprite.cpp" />
     <ClCompile Include="src\engine\graphics\SphereSprite.cpp" />
     <ClCompile Include="src\engine\io\File.cpp" />
+    <ClCompile Include="src\engine\message\EventQueue.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\raytracer\geometry\sphere.cpp" />
     <ClCompile Include="src\engine\gl\GLBuffer.cpp" />
@@ -44,6 +45,8 @@
     <ClInclude Include="include\engine\io\File.h" />
     <ClInclude Include="include\engine\gl\Shader.h" />
     <ClInclude Include="include\engine\graphics\Sprite.h" />
+    <ClInclude Include="include\engine\message\Event.h" />
+    <ClInclude Include="include\engine\message\EventQueue.h" />
     <ClInclude Include="include\geometry\sphere.h" />
     <ClInclude Include="include\engine\Engine.h" />
     <ClInclude Include="include\engine\gl\GLBuffer.h" />

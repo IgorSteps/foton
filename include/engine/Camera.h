@@ -14,11 +14,12 @@ class Camera
 {
 public:
     Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch);
-    glm::mat4 GetViewMatrix();
+    glm::mat4 GetViewMatrix() const;
+    float GetZoom() const;
     void ProcessKeyboard(CameraMovement direction, float deltaTime);
-    void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch);
+    void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
     void ProcessMouseScroll(float yOffset);
-
+    
 private:
     // Camera attributes.
     glm::vec3 _position;

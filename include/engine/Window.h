@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include <GLFW/glfw3.h>
+#include <engine/Camera.h>
+#include <memory>
+#include <engine/message/EventQueue.h>
 
 class Window
 {
@@ -10,9 +13,17 @@ public:
     void Update();
     bool IsClosed() const;
     static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
-
+    static void MouseCallback(GLFWwindow* window, double xpos, double ypos);
+    static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+    static void ProcessInput(GLFWwindow* window);
 private:
     GLFWwindow* _window;
     int _width, _height;
     std::string _title;
+    
+    // Mouse coords at the end of each frame.
+    static float _lastX;
+    static float _lastY;
 };
+
+extern EventQueue eventQueue;

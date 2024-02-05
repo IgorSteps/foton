@@ -1,7 +1,7 @@
 #include <engine/Camera.h>
 #include <glm/gtc/matrix_transform.hpp>
 
-Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch ) 
+Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) 
 	: 
 	_front(glm::vec3(0.0f, 0.0f, -1.0f)),
 	_speed(2.5f),
@@ -15,9 +15,14 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch )
 	updateCameraVectors();
 }
 
-glm::mat4 Camera::GetViewMatrix()
+glm::mat4 Camera::GetViewMatrix() const
 {
 	return glm::lookAt(_position, _position + _front, _up);
+}
+
+float Camera::GetZoom() const
+{
+    return _zoom;
 }
 
 // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
@@ -35,7 +40,7 @@ void Camera::ProcessKeyboard(CameraMovement direction, float deltaTime)
 }
 
 // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
+void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
 {
     xoffset *= _sensitivity;
     yoffset *= _sensitivity;

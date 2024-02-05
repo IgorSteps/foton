@@ -19,6 +19,7 @@
     <ClCompile Include="src\engine\graphics\SphereSprite.cpp" />
     <ClCompile Include="src\engine\Camera.cpp" />
     <ClCompile Include="src\engine\gl\GL.cpp" />
+    <ClCompile Include="src\engine\message\EventQueue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core\ray.h" />
@@ -37,6 +38,8 @@
     <ClInclude Include="include\engine\graphics\SphereSprite.h" />
     <ClInclude Include="include\engine\Camera.h" />
     <ClInclude Include="include\engine\gl\GL.h" />
+    <ClInclude Include="include\engine\message\Event.h" />
+    <ClInclude Include="include\engine\message\EventQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw\glfw3.lib" />
