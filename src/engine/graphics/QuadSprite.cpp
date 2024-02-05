@@ -1,8 +1,11 @@
 #include "engine/graphics/QuadSprite.h"
-
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/ext.hpp"
 QuadSprite::QuadSprite(const std::string& name, float width, float height) 
     : Sprite(name, width, height)
-{}
+{
+    position = glm::vec3(-1.0f, 0.0f, 1.0f);
+}
 
 void QuadSprite::Init()
 {
@@ -40,8 +43,18 @@ void QuadSprite::Update(float dt)
 {
 }
 
-void QuadSprite::Draw()
+void QuadSprite::Draw(std::unique_ptr<Shader>& shader)
 {
+    // colour
+    auto colorLocation = shader->GetUniformLocation("myColor");
+    glUniform4f(colorLocation, 0.0f, 1.0f, 0.0f, 1.0f);
+
+    // model
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, position);
+    auto modelLocation = shader->GetUniformLocation("u_model");
+    glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+
     _buffer->Bind(false);
     _buffer->Draw();
 }

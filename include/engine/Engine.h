@@ -15,8 +15,10 @@ public:
 	void update(float dt);
 	void draw();
 	void loadShaders();
+	void updateCameraFromEvent(std::unique_ptr<Camera>& camera, float dt);
 private:
 	std::unique_ptr<Window> window;
+	std::unique_ptr<Camera> _camera;
 	std::unique_ptr<QuadSprite> _quadSprite;
 	std::unique_ptr<SphereSprite> _sphereSprite;
 	std::unique_ptr<Shader> _basicShader;
