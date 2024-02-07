@@ -1,16 +1,42 @@
 #pragma once
-#include <core/image.h>
-#include <core/camera.h>
-#include <geometry/sphere.h>
+#include <vector>
+#include <glm/glm.hpp>
+#include <engine/Camera.h>
+#include <engine/graphics/SphereSprite.h>
+
+const unsigned int screenWidth = 1200;
+const unsigned int screenHeight = 800;
+
 
 class Renderer {
 public:
-	Renderer(Image& img, Camera& cam, Sphere& sphere): m_Img(img), m_Camera(cam), m_Sphere(sphere) {}
-	void Render() ;
+    Renderer(Camera* camera, SphereSprite* sphere) 
+        : _camera(camera), _sphere(sphere) 
+    {
+        image.resize(screenWidth * screenHeight);
+    }
 
-	glm::vec3 CalculateRayColour(const Ray& r);
+	std::vector<glm::vec3> image;
+	void Render()
+	{
+        for (int j = 0; j < screenHeight; ++j) {
+            for (int i = 0; i < screenWidth; ++i) {
+                // Normalise screen coordinates.
+                float u = float(i) / (screenWidth - 1);
+                float v = float(j) / (screenHeight - 1);
+
+                Ray ray = _camera->GetRay(u, v);
+                glm::vec3 color = glm::vec3(0, 0, 0); // Default background color
+
+                if (_sphere->Intersects(ray)) {
+                    color = glm::vec3(1, 0, 0); // Red color for the sphere
+                }
+                image[j * screenWidth + i] = color;
+            }
+        }
+	}
 private:
-	Camera m_Camera;
-	Image m_Img;
-	Sphere m_Sphere;
+    Camera* _camera;
+    SphereSprite* _sphere;
+
 };

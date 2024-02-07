@@ -6,7 +6,6 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\utils\colour.cpp" />
-    <ClCompile Include="src\raytracer\core\ray.cpp" />
     <ClCompile Include="src\raytracer\geometry\sphere.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\engine\Engine.cpp" />
@@ -20,13 +19,15 @@
     <ClCompile Include="src\engine\Camera.cpp" />
     <ClCompile Include="src\engine\gl\GL.cpp" />
     <ClCompile Include="src\engine\message\EventQueue.cpp" />
+    <ClCompile Include="src\engine\collision\SphereCollision.cpp" />
+    <ClCompile Include="src\engine\Ray.cpp" />
+    <ClCompile Include="src\engine\graphics\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\core\ray.h" />
     <ClInclude Include="include\utils\colour.h" />
-    <ClInclude Include="include\core\camera.h" />
-    <ClInclude Include="include\core\image.h" />
-    <ClInclude Include="include\geometry\sphere.h" />
+    <ClInclude Include="include\raytracer\core\camera.h" />
+    <ClInclude Include="include\raytracer\core\image.h" />
+    <ClInclude Include="include\raytracer\geometry\sphere.h" />
     <ClInclude Include="include\engine\Engine.h" />
     <ClInclude Include="include\engine\renderer.h" />
     <ClInclude Include="include\engine\Window.h" />
@@ -40,6 +41,9 @@
     <ClInclude Include="include\engine\gl\GL.h" />
     <ClInclude Include="include\engine\message\Event.h" />
     <ClInclude Include="include\engine\message\EventQueue.h" />
+    <ClInclude Include="include\engine\collision\SphereCollision.h" />
+    <ClInclude Include="include\engine\Ray.h" />
+    <ClInclude Include="include\engine\graphics\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw\glfw3.lib" />

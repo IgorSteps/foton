@@ -55,6 +55,19 @@ void SphereSprite::Draw(std::unique_ptr<Shader>& shader)
     _buffer->Draw();
 }
 
+bool SphereSprite::Intersects(const Ray& r)
+{
+    glm::vec3 oc = r.Origin() - position;
+
+    float a = glm::dot(r.Direction(), r.Direction());
+    float b = 2.0f * glm::dot(oc, r.Direction());
+    float c = glm::dot(oc, oc) - pow(_radius, 2);
+
+    float discriminant = pow(b, 2) - 4 * a * c;
+
+    return discriminant >= 0;
+}
+
 /// <summary>
 /// Generate sphere vertices and indices using UV sphere method.
 /// Reference: https://www.songho.ca/opengl/gl_sphere.html

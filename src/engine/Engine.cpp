@@ -24,7 +24,7 @@ void Engine::run()
 
     try 
     {
-        while (!window->IsClosed())
+        while (!_window->IsClosed())
         {
             auto currentTime = Clock::now();
             float dt = duration_cast<duration<float>>(currentTime - lastTime).count();
@@ -32,7 +32,7 @@ void Engine::run()
 
             update(dt);
             draw();
-            window->Update();
+            _window->Update();
         }
     }
     catch (const std::exception& e) 
@@ -43,20 +43,20 @@ void Engine::run()
 
 void Engine::init()
 {
-    window = std::make_unique<Window>(SCR_WIDTH, SCR_HEIGHT, "Foton");
+    // @TODO: Set aspect ratio based on viewport width & height.
+    _window = std::make_unique<Window>(SCR_WIDTH, SCR_HEIGHT, "Foton");
     _camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
+    _quadSprite = std::make_unique<QuadSprite>("Test quad", 0.5f, 0.5f);
+    _sphereSprite = std::make_unique<SphereSprite>("Test sphere", 1.0f, 36, 18);
+    _renderer = std::make_unique<Renderer>(_camera.get(), _sphereSprite.get());
+    _texture = std::make_unique<Texture>((float)SCR_WIDTH, (float)SCR_HEIGHT);
     
     loadShaders();
     _basicShader->Use();
 
-    // Init.
-    // TODO: Set aspect ration based on viewport width & height.
-    _projection = glm::perspective(glm::radians(_camera->GetZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    _quadSprite = std::make_unique<QuadSprite>("Test quad", 0.5f, 0.5f);
     _quadSprite->Init();
-
-    _sphereSprite = std::make_unique<SphereSprite>("Test sphere", 1.0f, 36, 18);
     _sphereSprite->Init();
+    _texture->Init();
 }
 
 void Engine::update(float dt)
@@ -70,19 +70,17 @@ void Engine::draw()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // Generate ray-traced image and upload it as texture to GPU.
+    _renderer->Render();
+    _texture->ActivateAndBind();
+    _texture->Upload(_renderer->image);
 
-    // view
-    glm::mat4 view = _camera->GetViewMatrix();
-    auto viewLocation = _basicShader->GetUniformLocation("u_view");
-    glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+    //@TODO: move elsewhere?
+    auto textLocation = _basicShader->GetUniformLocation("u_texture");
+    glUniform1i(textLocation, 0);
 
-    // projection
-    auto projectionLocation = _basicShader->GetUniformLocation("u_projection");
-    glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(_projection));
-
+    // Draw the quad.
     _quadSprite->Draw(_basicShader);
-    _sphereSprite->Draw(_basicShader);
-
 }
 
 void Engine::loadShaders()
@@ -93,7 +91,6 @@ void Engine::loadShaders()
 
     _basicShader = std::make_unique<Shader>("Basic");
     _basicShader->Load(vertexShaderSource, fragmentShaderSource);
-
 }
 
 void Engine::updateCameraFromEvent(std::unique_ptr<Camera>& camera, float dt)

@@ -14,7 +14,6 @@ void GL::InitiliseGLAD(GLFWwindow* window)
         glfwTerminate();
         throw std::runtime_error("Failed to initialize GLAD");
     }
-    glEnable(GL_DEPTH_TEST);
 }
 
 void GL::InitiliseGLFW()

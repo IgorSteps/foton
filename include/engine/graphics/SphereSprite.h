@@ -1,6 +1,7 @@
 #pragma once
 #include <engine/graphics/Sprite.h>
 #include <engine/gl/Shader.h>
+#include <engine/Ray.h>
 
 class SphereSprite : public Sprite
 {
@@ -9,6 +10,7 @@ public:
 	virtual void Init() override;
 	virtual void Update(float dt) override;
 	virtual void Draw(std::unique_ptr<Shader>& shader) override;
+	bool Intersects(const Ray& ray);
 private:
 	float _radius;
 	int _segments, _stacks;

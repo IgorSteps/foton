@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glad/glad.h>
+#include <engine/Ray.h>
 
 enum CameraMovement 
 {
@@ -16,10 +17,11 @@ public:
     Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch);
     glm::mat4 GetViewMatrix() const;
     float GetZoom() const;
+    glm::vec3 GetPosition() const;
     void ProcessKeyboard(CameraMovement direction, float deltaTime);
     void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
     void ProcessMouseScroll(float yOffset);
-    
+    Ray GetRay(float u, float v) const;
 private:
     // Camera attributes.
     glm::vec3 _position;

@@ -25,7 +25,11 @@ float Camera::GetZoom() const
     return _zoom;
 }
 
-// processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
+glm::vec3 Camera::GetPosition() const
+{
+    return  _position;
+}
+
 void Camera::ProcessKeyboard(CameraMovement direction, float deltaTime)
 {
     float velocity = _speed * deltaTime;
@@ -39,7 +43,6 @@ void Camera::ProcessKeyboard(CameraMovement direction, float deltaTime)
         _position += _right * velocity;
 }
 
-// processes input received from a mouse input system. Expects the offset value in both the x and y direction.
 void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
 {
     xoffset *= _sensitivity;
@@ -61,7 +64,6 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
     updateCameraVectors();
 }
 
-// processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
 void Camera::ProcessMouseScroll(float yoffset)
 {
     _zoom -= (float)yoffset;
@@ -69,6 +71,34 @@ void Camera::ProcessMouseScroll(float yoffset)
         _zoom = 1.0f;
     if (_zoom > 45.0f)
         _zoom = 45.0f;
+}
+
+/// <summary>
+/// Generate a ray passing through a given pixel on the viewport.
+/// </summary>
+Ray Camera::GetRay(float u, float v) const
+{
+    float aspectRatio = 1200 / (float)800;
+    
+    // tanFovHalf allows to calculate how far a Ray should diverge from the camera's
+    // central direction as it passes through a given pixel on the image plane.
+    float tanFovHalf = tan(glm::radians(_zoom / 2.0f)); 
+
+    // Convert from normalised screen coordinates to NDC.
+    float ndcX = (2.0f * u) - 1.0f;
+    float ndcY = 1.0f - (2.0f * v); // Flip Y axis(OpengGL and GLFW coord systems are inverted)
+
+    // Convert from NDC to camera coordinates.
+    float camX = ndcX * aspectRatio * tanFovHalf;
+    float camY = ndcY * tanFovHalf;
+
+    // Create a ray in camera space.
+    glm::vec3 rayDirCamSpace = glm::normalize(glm::vec3(camX, camY, -1.0f));
+
+    // Convert ray direction from camera space to world space.
+    glm::vec3 rayDirWorldSpace = glm::normalize(_front + rayDirCamSpace.x * _right - rayDirCamSpace.y * _up);
+
+    return Ray(_position, rayDirWorldSpace);
 }
 
 void Camera::updateCameraVectors()
