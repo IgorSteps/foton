@@ -30,6 +30,22 @@ void Engine::run()
             float dt = duration_cast<duration<float>>(currentTime - lastTime).count();
             lastTime = currentTime;
 
+            // @TODO: Move elsewhere.
+            // FPS:
+            _timeSinceLastFPSUpdate += dt;
+            ++_frameCount;
+
+            // Check if it's time to update the FPS display
+            if (_timeSinceLastFPSUpdate >= _fpsUpdateInterval) {
+                _lastFPS = _frameCount / _timeSinceLastFPSUpdate; // Calculate FPS
+                _frameCount = 0;
+                _timeSinceLastFPSUpdate = 0.0f;
+
+                // Display FPS in window title.
+                std::string windowTitle = "Foton - FPS: " + std::to_string(_lastFPS);
+                _window->SetTitle(windowTitle);
+            }
+
             update(dt);
             draw();
             _window->Update();

@@ -48,6 +48,11 @@ bool Window::IsClosed() const
     return glfwWindowShouldClose(_window) != 0;
 }
 
+void Window::SetTitle(const std::string& title)
+{
+    glfwSetWindowTitle(_window, title.c_str());
+}
+
 void Window::FramebufferSizeCallback(GLFWwindow* window, int width, int height) 
 {
     glViewport(0, 0, width, height);

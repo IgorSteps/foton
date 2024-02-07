@@ -24,7 +24,12 @@ private:
 	std::unique_ptr<QuadSprite> _quadSprite;
 	std::unique_ptr<SphereSprite> _sphereSprite;
 	std::unique_ptr<Shader> _basicShader;
-	glm::mat4 _projection;
 	std::unique_ptr<Renderer> _renderer;
 	std::unique_ptr<Texture> _texture;
+
+	// FPS.
+	int _frameCount = 0;
+	float _timeSinceLastFPSUpdate = 0.0f;
+	float _fpsUpdateInterval = 1.0f; // Update FPS every second
+	float _lastFPS = 0.0f; // Store the last calculated FPS value
 };

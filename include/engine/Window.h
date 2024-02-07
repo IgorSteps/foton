@@ -12,6 +12,7 @@ public:
 	~Window();
     void Update();
     bool IsClosed() const;
+    void SetTitle(const std::string& title);
     static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
     static void MouseCallback(GLFWwindow* window, double xpos, double ypos);
     static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
