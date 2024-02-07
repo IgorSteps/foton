@@ -55,7 +55,7 @@ void SphereSprite::Draw(std::unique_ptr<Shader>& shader)
     _buffer->Draw();
 }
 
-bool SphereSprite::Intersects(const Ray& r)
+__device__  bool SphereSprite::Intersects(const Ray& r)
 {
     glm::vec3 oc = r.Origin() - position;
 

@@ -76,7 +76,7 @@ void Camera::ProcessMouseScroll(float yoffset)
 /// <summary>
 /// Generate a ray passing through a given pixel on the viewport.
 /// </summary>
-Ray Camera::GetRay(float u, float v) const
+__device__ Ray Camera::GetRay(float u, float v) const
 {
     float aspectRatio = 1200 / (float)800;
     
