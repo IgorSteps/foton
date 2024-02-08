@@ -86,8 +86,19 @@ void Engine::draw()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // *********************************
     // Generate ray-traced image and upload it as texture to GPU.
-    _renderer->Render();
+    // *********************************
+
+    // Copy image data to device
+    _renderer->CopyImageToDevice();
+    _renderer->UpdateCameraData();
+
+    // Render using CUDA
+    _renderer->RenderUsingCUDA();
+
+    // Copy image data back to host
+    _renderer->CopyImageToHost();
     _texture->ActivateAndBind();
     _texture->Upload(_renderer->image);
 

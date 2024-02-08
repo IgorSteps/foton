@@ -36,6 +36,7 @@
     <ClCompile Include="src\engine\Renderer.cpp" />
     <ClCompile Include="src\engine\Window.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClInclude Include="include\engine\cuda\renderData.cuh" />
     <ClInclude Include="include\engine\graphics\Texture.h" />
     <ClInclude Include="include\engine\Ray.h" />
     <ClInclude Include="include\engine\Camera.h" />

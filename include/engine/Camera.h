@@ -19,10 +19,13 @@ public:
     glm::mat4 GetViewMatrix() const;
     float GetZoom() const;
     glm::vec3 GetPosition() const;
+    glm::vec3 GetUp() const;
+    glm::vec3 GetFront() const;
+    glm::vec3 GetRight() const;
     void ProcessKeyboard(CameraMovement direction, float deltaTime);
     void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
     void ProcessMouseScroll(float yOffset);
-    __device__ Ray GetRay(float u, float v) const;
+    Ray GetRay(float u, float v) const;
 private:
     // Camera attributes.
     glm::vec3 _position;

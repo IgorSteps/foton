@@ -30,6 +30,21 @@ glm::vec3 Camera::GetPosition() const
     return  _position;
 }
 
+glm::vec3 Camera::GetUp() const
+{
+    return _up;
+}
+
+glm::vec3 Camera::GetFront() const
+{
+    return _front;
+}
+
+glm::vec3 Camera::GetRight() const
+{
+    return _right;
+}
+
 void Camera::ProcessKeyboard(CameraMovement direction, float deltaTime)
 {
     float velocity = _speed * deltaTime;
@@ -76,7 +91,7 @@ void Camera::ProcessMouseScroll(float yoffset)
 /// <summary>
 /// Generate a ray passing through a given pixel on the viewport.
 /// </summary>
-__device__ Ray Camera::GetRay(float u, float v) const
+Ray Camera::GetRay(float u, float v) const
 {
     float aspectRatio = 1200 / (float)800;
     

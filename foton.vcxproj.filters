@@ -39,6 +39,7 @@
     <ClInclude Include="include\engine\collision\SphereCollision.h" />
     <ClInclude Include="include\engine\Ray.h" />
     <ClInclude Include="include\engine\graphics\Texture.h" />
+    <ClInclude Include="include\engine\cuda\renderData.cuh" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw\glfw3.lib" />
