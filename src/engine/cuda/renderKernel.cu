@@ -27,7 +27,7 @@ __device__ bool Intersects(const SRay& ray, const SphereData* sphere) {
     float c = dot(oc, oc) - sphere->radius * sphere->radius;
     float discriminant = b * b - 4 * a * c;
     return discriminant >= 0;
-}
+} 
 
 
 __global__ 
