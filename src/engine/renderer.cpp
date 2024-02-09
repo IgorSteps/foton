@@ -4,39 +4,33 @@
 Renderer::Renderer(Camera* camera, SphereSprite* sphere)
     : _camera(camera), _sphere(sphere)
 {
-    image.resize(screenWidth * screenHeight);
-
-    // Allocate memory on the device for the image buffer
-    cudaMalloc(&d_image, screenWidth * screenHeight * sizeof(glm::vec3));
-
     // Allocate memory for camera and sphere data on the device
-    cudaMalloc(&d_cameraData, sizeof(CameraData));
-    cudaMalloc(&d_sphereData, sizeof(SphereData));
+    cudaError_t error = cudaMalloc(&d_cameraData, sizeof(CameraData));
+    if (error != cudaSuccess) {
+        fprintf(stderr, "Failed to allocate memory for CameraData: %s\n", cudaGetErrorString(error));
+    }
 
-    //// Copy camera and sphere data from host to device
-    //CameraData hostCameraData(_camera);
-    //cudaMemcpy(d_cameraData, &hostCameraData, sizeof(CameraData), cudaMemcpyHostToDevice);
+    error = cudaMalloc(&d_sphereData, sizeof(SphereData));
+    if (error != cudaSuccess) {
+        fprintf(stderr, "Failed to allocate memory for SphereData: %s\n", cudaGetErrorString(error));
+    }
 
-    //SphereData hostSphereData(_sphere);
-    //cudaMemcpy(d_sphereData, &hostSphereData, sizeof(SphereData), cudaMemcpyHostToDevice);
-    // Update camera and sphere data on the device
     UpdateCameraData();
     UpdateSphereData();
 }
 
 Renderer::~Renderer() {
-    cudaFree(d_image);
     cudaFree(d_cameraData);
     cudaFree(d_sphereData);
 }
 
-void Renderer::CopyImageToDevice() {
-    cudaMemcpy(d_image, image.data(), screenWidth * screenHeight * sizeof(glm::vec3), cudaMemcpyHostToDevice);
-}
-
-void Renderer::CopyImageToHost() {
-    cudaMemcpy(image.data(), d_image, screenWidth * screenHeight * sizeof(glm::vec3), cudaMemcpyDeviceToHost);
-}
+//void Renderer::CopyImageToDevice() {
+//    cudaMemcpy(d_image, image.data(), screenWidth * screenHeight * sizeof(glm::vec3), cudaMemcpyHostToDevice);
+//}
+//
+//void Renderer::CopyImageToHost() {
+//    cudaMemcpy(image.data(), d_image, screenWidth * screenHeight * sizeof(glm::vec3), cudaMemcpyDeviceToHost);
+//}
 
 void Renderer::UpdateCameraData() {
     CameraData hostCameraData;
@@ -47,7 +41,10 @@ void Renderer::UpdateCameraData() {
     hostCameraData.fov = _camera->GetZoom();
     hostCameraData.aspectRatio = 1200.0f / 800.0f;
 
-    cudaMemcpy(d_cameraData, &hostCameraData, sizeof(CameraData), cudaMemcpyHostToDevice);
+    cudaError_t error = cudaMemcpy(d_cameraData, &hostCameraData, sizeof(CameraData), cudaMemcpyHostToDevice);
+    if (error != cudaSuccess) {
+        fprintf(stderr, "Failed to copy new CameraData: %s\n", cudaGetErrorString(error));
+    }
 }
 
 void Renderer::UpdateSphereData() {
@@ -55,7 +52,10 @@ void Renderer::UpdateSphereData() {
     hostSphereData.position = _sphere->position;
     hostSphereData.radius = _sphere->GetRadius();
 
-    cudaMemcpy(d_sphereData, &hostSphereData, sizeof(SphereData), cudaMemcpyHostToDevice);
+    cudaError_t error = cudaMemcpy(d_sphereData, &hostSphereData, sizeof(SphereData), cudaMemcpyHostToDevice);
+    if (error != cudaSuccess) {
+        fprintf(stderr, "Failed to copy new SphereData: %s\n", cudaGetErrorString(error));
+    }
 }
 
 void Renderer::Render()

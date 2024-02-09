@@ -47,11 +47,11 @@ void renderKernel(glm::vec3* output, int width, int height, CameraData* camData,
         output[j * width + i] = glm::vec3(1.0, 0.0, 0.0); // Red color for the sphere
     }
     else {
-        output[j * width + i] = glm::vec3(0.0, 0.0, 0.0); // Default background color
+        output[j * width + i] = glm::vec3(0.0, 0.0, 1.0); // Default background color
     }
 }
 
-void Renderer::RenderUsingCUDA()
+void Renderer::RenderUsingCUDA(void* cudaPtr)
 {
     // Launch CUDA kernel
     dim3 threadsPerBlock(16, 16);
@@ -60,7 +60,12 @@ void Renderer::RenderUsingCUDA()
         (800 + threadsPerBlock.y - 1) / threadsPerBlock.y
     );
 
-    renderKernel << <numBlocks, threadsPerBlock >> > (d_image, 1200, 800, d_cameraData, d_sphereData);
+    renderKernel << <numBlocks, threadsPerBlock >> > (static_cast<glm::vec3*>(cudaPtr), 1200, 800, d_cameraData, d_sphereData);
 
     cudaDeviceSynchronize();
+
+    cudaError_t error = cudaGetLastError();
+    if (error != cudaSuccess) {
+        fprintf(stderr, "CUDA error in kernel launch: %s\n", cudaGetErrorString(error));
+    }
 }

@@ -22,6 +22,8 @@ void Texture::Init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // Clamp to edge for S coordinate
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Clamp to edge for T coordinate
 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_FLOAT, nullptr);
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -44,6 +46,12 @@ void Texture::ActivateAndBind()
 {
 	glActiveTexture(GL_TEXTURE0);
 	Bind();
+}
+
+void Texture::Draw(std::unique_ptr<Shader>& shader)
+{
+	auto textLocation = shader->GetUniformLocation("u_texture");
+	glUniform1i(textLocation, 0);
 }
 
 void Texture::Unbind()

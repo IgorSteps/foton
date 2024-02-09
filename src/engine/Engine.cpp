@@ -5,6 +5,7 @@
 #include "glm/ext.hpp"
 #include <chrono>
 
+
 using Clock = std::chrono::high_resolution_clock;
 using std::chrono::duration_cast;
 using std::chrono::duration;
@@ -73,6 +74,9 @@ void Engine::init()
     _quadSprite->Init();
     _sphereSprite->Init();
     _texture->Init();
+
+    _pbo = std::make_unique<PBO>(SCR_WIDTH, SCR_HEIGHT);
+    _interopBuffer = std::make_unique<InteropBuffer>(_pbo->getID());
 }
 
 void Engine::update(float dt)
@@ -80,35 +84,63 @@ void Engine::update(float dt)
     updateCameraFromEvent(_camera, dt);
 }
 
+GLenum glCheckError_(const char* file, int line)
+{
+    GLenum errorCode;
+    while ((errorCode = glGetError()) != GL_NO_ERROR)
+    {
+        std::string error;
+        switch (errorCode)
+        {
+        case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
+        case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
+        case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
+        case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
+        case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
+        case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
+        case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
+        }
+        std::cout << error << " | " << file << " (" << line << ")" << std::endl;
+    }
+    return errorCode;
+}
+#define glCheckError() glCheckError_(__FILE__, __LINE__) 
+
+
 // Render here
 void Engine::draw()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // *********************************
-    // Generate ray-traced image and upload it as texture to GPU.
-    // *********************************
+    _interopBuffer->MapCudaResource();
 
-    // Copy image data to device
-    _renderer->CopyImageToDevice();
+    size_t size;
+    void* cudaPtr = _interopBuffer->GetCudaMappedPtr(&size); 
+
     _renderer->UpdateCameraData();
+    _renderer->UpdateSphereData();
 
-    // Render using CUDA
-    _renderer->RenderUsingCUDA();
+    // Update the PBO data via cudaPtr.
+    _renderer->RenderUsingCUDA(cudaPtr);
 
-    // Copy image data back to host
-    _renderer->CopyImageToHost();
+    _interopBuffer->UnmapCudaResource();
+   
+    // Update texture with PBO data.
+    _pbo->bind();
     _texture->ActivateAndBind();
-    _texture->Upload(_renderer->image);
-
-    //@TODO: move elsewhere?
-    auto textLocation = _basicShader->GetUniformLocation("u_texture");
-    glUniform1i(textLocation, 0);
-
-    // Draw the quad.
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1200, 800, GL_RGB, GL_FLOAT, nullptr);
+    
+    _texture->Draw(_basicShader);
     _quadSprite->Draw(_basicShader);
+
+
+    _texture->Unbind();
+    _pbo->unbind();
+
+    glCheckError();
 }
+
 
 void Engine::loadShaders()
 {

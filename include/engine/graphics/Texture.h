@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <vector>
 #include <glm/glm.hpp>
+#include <memory>
+#include <engine/gl/Shader.h>
 
 class Texture
 {
@@ -15,6 +17,7 @@ public:
 	void Upload(const std::vector<glm::vec3>& data);
 	void Bind();
 	void ActivateAndBind();
+	void Draw(std::unique_ptr<Shader>& shader);
 	void Unbind();
 
 private:

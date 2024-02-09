@@ -20,7 +20,7 @@ public:
     void UpdateCameraData();
     void UpdateSphereData();
     void Render();
-    void RenderUsingCUDA();
+    void RenderUsingCUDA(void* cudaPtr);
     void CopyImageToDevice();
     void CopyImageToHost();
 private:
