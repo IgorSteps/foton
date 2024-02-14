@@ -5,7 +5,6 @@
 #include "glm/ext.hpp"
 #include <chrono>
 
-
 using Clock = std::chrono::high_resolution_clock;
 using std::chrono::duration_cast;
 using std::chrono::duration;
@@ -13,6 +12,29 @@ using std::chrono::seconds;
 
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
+
+GLenum glCheckError_(const char* file, int line)
+{
+    GLenum errorCode;
+    while ((errorCode = glGetError()) != GL_NO_ERROR)
+    {
+        std::string error;
+        switch (errorCode)
+        {
+        case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
+        case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
+        case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
+        case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
+        case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
+        case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
+        case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
+        }
+        std::cout << error << " | " << file << " (" << line << ")" << std::endl;
+    }
+    return errorCode;
+}
+#define glCheckError() glCheckError_(__FILE__, __LINE__) 
+
 
 Engine::Engine()
 {
@@ -37,7 +59,8 @@ void Engine::run()
             ++_frameCount;
 
             // Check if it's time to update the FPS display
-            if (_timeSinceLastFPSUpdate >= _fpsUpdateInterval) {
+            if (_timeSinceLastFPSUpdate >= _fpsUpdateInterval)
+            {
                 _lastFPS = _frameCount / _timeSinceLastFPSUpdate; // Calculate FPS
                 _frameCount = 0;
                 _timeSinceLastFPSUpdate = 0.0f;
@@ -82,60 +105,27 @@ void Engine::init()
 void Engine::update(float dt)
 {
     updateCameraFromEvent(_camera, dt);
+
+    _pbo->bind();
+    _texture->Update();
+    _pbo->unbind();
+
+    _renderer->UpdateCameraData();
+    _renderer->UpdateSphereData();
 }
 
-GLenum glCheckError_(const char* file, int line)
-{
-    GLenum errorCode;
-    while ((errorCode = glGetError()) != GL_NO_ERROR)
-    {
-        std::string error;
-        switch (errorCode)
-        {
-        case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
-        case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
-        case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
-        case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
-        case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
-        case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
-        case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
-        }
-        std::cout << error << " | " << file << " (" << line << ")" << std::endl;
-    }
-    return errorCode;
-}
-#define glCheckError() glCheckError_(__FILE__, __LINE__) 
-
-
-// Render here
 void Engine::draw()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    _interopBuffer->MapCudaResource();
-
-    size_t size;
-    void* cudaPtr = _interopBuffer->GetCudaMappedPtr(&size); 
-
-    _renderer->UpdateCameraData();
-    _renderer->UpdateSphereData();
-
-    // Update the PBO data via cudaPtr.
-    _renderer->RenderUsingCUDA(cudaPtr);
-
-    _interopBuffer->UnmapCudaResource();
+    // could be moved into update()?
+    _renderer->Render(_interopBuffer);
    
-    // Update texture with PBO data.
+    // could be encapsulated better?
     _pbo->bind();
-    _texture->ActivateAndBind();
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1200, 800, GL_RGB, GL_FLOAT, nullptr);
-    
     _texture->Draw(_basicShader);
     _quadSprite->Draw(_basicShader);
-
-
-    _texture->Unbind();
     _pbo->unbind();
 
     glCheckError();

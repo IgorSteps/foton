@@ -41,13 +41,14 @@ void renderKernel(glm::vec3* output, int width, int height, CameraData* camData,
     float u = float(i) / (width - 1);
     float v = float(j) / (height - 1);
 
-    // Assuming GetRay and Intersects are implemented in a device-friendly manner
     SRay ray = GetRay(camData, u, v);
     if (Intersects(ray, sphereData)) {
         output[j * width + i] = glm::vec3(1.0, 0.0, 0.0); // Red color for the sphere
     }
     else {
-        output[j * width + i] = glm::vec3(0.0, 0.0, 1.0); // Default background color
+        glm::vec3 unitDirection = glm::normalize(ray.direction);
+        auto a = 0.5f * (unitDirection.y + 1.0f);
+        output[j * width + i] = (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
     }
 }
 

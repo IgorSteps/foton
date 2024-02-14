@@ -27,14 +27,11 @@ void Texture::Init()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-/// <summary>
-/// Upload texture to GPU.
-/// </summary>
-void Texture::Upload(const std::vector<glm::vec3>& data)
+void Texture::Update()
 {
-	glBindTexture(GL_TEXTURE_2D, _id);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_FLOAT, data.data());
+	ActivateAndBind();
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _width, _height, GL_RGB, GL_FLOAT, nullptr);
+	Unbind();
 }
 
 void Texture::Bind()
@@ -44,12 +41,13 @@ void Texture::Bind()
 
 void Texture::ActivateAndBind()
 {
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(0x84C0);
 	Bind();
 }
 
 void Texture::Draw(std::unique_ptr<Shader>& shader)
 {
+	ActivateAndBind();
 	auto textLocation = shader->GetUniformLocation("u_texture");
 	glUniform1i(textLocation, 0);
 }

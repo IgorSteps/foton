@@ -37,3 +37,4 @@ private:
 	float _fpsUpdateInterval = 1.0f; // Update FPS every second
 	float _lastFPS = 0.0f; // Store the last calculated FPS value
 };
+

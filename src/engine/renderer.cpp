@@ -24,14 +24,6 @@ Renderer::~Renderer() {
     cudaFree(d_sphereData);
 }
 
-//void Renderer::CopyImageToDevice() {
-//    cudaMemcpy(d_image, image.data(), screenWidth * screenHeight * sizeof(glm::vec3), cudaMemcpyHostToDevice);
-//}
-//
-//void Renderer::CopyImageToHost() {
-//    cudaMemcpy(image.data(), d_image, screenWidth * screenHeight * sizeof(glm::vec3), cudaMemcpyDeviceToHost);
-//}
-
 void Renderer::UpdateCameraData() {
     CameraData hostCameraData;
     hostCameraData.position = _camera->GetPosition();
@@ -58,21 +50,15 @@ void Renderer::UpdateSphereData() {
     }
 }
 
-void Renderer::Render()
+void Renderer::Render(std::unique_ptr<InteropBuffer>& interopBuffer)
 {
-    for (int j = 0; j < screenHeight; ++j) {
-        for (int i = 0; i < screenWidth; ++i) {
-            // Normalise screen coordinates.
-            float u = float(i) / (screenWidth - 1);
-            float v = float(j) / (screenHeight - 1);
+    interopBuffer->MapCudaResource();
 
-            Ray ray = _camera->GetRay(u, v);
-            glm::vec3 color = glm::vec3(0, 0, 0); // Default background color
+    size_t size;
+    void* cudaPtr = interopBuffer->GetCudaMappedPtr(&size);
 
-            if (_sphere->Intersects(ray)) {
-                color = glm::vec3(1, 0, 0); // Red color for the sphere
-            }
-            image[j * screenWidth + i] = color;
-        }
-    }
+    // Update the PBO data via cudaPtr.
+   RenderUsingCUDA(cudaPtr);
+
+   interopBuffer->UnmapCudaResource();
 }

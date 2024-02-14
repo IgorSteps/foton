@@ -14,7 +14,7 @@ public:
 	GLuint GetID() const;
 
 	void Init();
-	void Upload(const std::vector<glm::vec3>& data);
+	void Update();
 	void Bind();
 	void ActivateAndBind();
 	void Draw(std::unique_ptr<Shader>& shader);
