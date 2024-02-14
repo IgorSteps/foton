@@ -13,6 +13,29 @@ using std::chrono::seconds;
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
 
+GLenum glCheckError_(const char* file, int line)
+{
+    GLenum errorCode;
+    while ((errorCode = glGetError()) != GL_NO_ERROR)
+    {
+        std::string error;
+        switch (errorCode)
+        {
+        case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
+        case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
+        case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
+        case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
+        case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
+        case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
+        case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
+        }
+        std::cout << error << " | " << file << " (" << line << ")" << std::endl;
+    }
+    return errorCode;
+}
+#define glCheckError() glCheckError_(__FILE__, __LINE__) 
+
+
 Engine::Engine()
 {
     init();
@@ -36,7 +59,8 @@ void Engine::run()
             ++_frameCount;
 
             // Check if it's time to update the FPS display
-            if (_timeSinceLastFPSUpdate >= _fpsUpdateInterval) {
+            if (_timeSinceLastFPSUpdate >= _fpsUpdateInterval)
+            {
                 _lastFPS = _frameCount / _timeSinceLastFPSUpdate; // Calculate FPS
                 _frameCount = 0;
                 _timeSinceLastFPSUpdate = 0.0f;
@@ -73,31 +97,40 @@ void Engine::init()
     _quadSprite->Init();
     _sphereSprite->Init();
     _texture->Init();
+
+    _pbo = std::make_unique<PBO>(SCR_WIDTH, SCR_HEIGHT);
+    _interopBuffer = std::make_unique<InteropBuffer>(_pbo->getID());
 }
 
 void Engine::update(float dt)
 {
     updateCameraFromEvent(_camera, dt);
+
+    _pbo->bind();
+    _texture->Update();
+    _pbo->unbind();
+
+    _renderer->UpdateCameraData();
+    _renderer->UpdateSphereData();
 }
 
-// Render here
 void Engine::draw()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Generate ray-traced image and upload it as texture to GPU.
-    _renderer->Render();
-    _texture->ActivateAndBind();
-    _texture->Upload(_renderer->image);
-
-    //@TODO: move elsewhere?
-    auto textLocation = _basicShader->GetUniformLocation("u_texture");
-    glUniform1i(textLocation, 0);
-
-    // Draw the quad.
+    // could be moved into update()?
+    _renderer->Render(_interopBuffer);
+   
+    // could be encapsulated better?
+    _pbo->bind();
+    _texture->Draw(_basicShader);
     _quadSprite->Draw(_basicShader);
+    _pbo->unbind();
+
+    glCheckError();
 }
+
 
 void Engine::loadShaders()
 {

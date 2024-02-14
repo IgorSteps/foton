@@ -5,13 +5,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\utils\colour.cpp" />
-    <ClCompile Include="src\raytracer\geometry\sphere.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\engine\Engine.cpp" />
     <ClCompile Include="src\engine\gl\Shader.cpp" />
     <ClCompile Include="src\engine\gl\GLBuffer.cpp" />
-    <ClCompile Include="src\engine\renderer.cpp" />
+    <ClCompile Include="src\engine\Renderer.cpp" />
     <ClCompile Include="src\engine\Window.cpp" />
     <ClCompile Include="src\engine\io\File.cpp" />
     <ClCompile Include="src\engine\graphics\QuadSprite.cpp" />
@@ -25,11 +23,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\utils\colour.h" />
-    <ClInclude Include="include\raytracer\core\camera.h" />
-    <ClInclude Include="include\raytracer\core\image.h" />
-    <ClInclude Include="include\raytracer\geometry\sphere.h" />
     <ClInclude Include="include\engine\Engine.h" />
-    <ClInclude Include="include\engine\renderer.h" />
+    <ClInclude Include="include\engine\Renderer.h" />
     <ClInclude Include="include\engine\Window.h" />
     <ClInclude Include="include\engine\io\File.h" />
     <ClInclude Include="include\engine\gl\Shader.h" />
@@ -44,6 +39,7 @@
     <ClInclude Include="include\engine\collision\SphereCollision.h" />
     <ClInclude Include="include\engine\Ray.h" />
     <ClInclude Include="include\engine\graphics\Texture.h" />
+    <ClInclude Include="include\engine\cuda\renderData.cuh" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw\glfw3.lib" />
@@ -51,5 +47,8 @@
   <ItemGroup>
     <Text Include="src\engine\gl\shaders\basicFrag.frag" />
     <Text Include="src\engine\gl\shaders\basicVertex.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\engine\cuda\renderKernel.cu" />
   </ItemGroup>
 </Project>

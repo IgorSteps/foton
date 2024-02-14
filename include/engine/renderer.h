@@ -3,40 +3,30 @@
 #include <glm/glm.hpp>
 #include <engine/Camera.h>
 #include <engine/graphics/SphereSprite.h>
+#include <engine/cuda/InteropBuffer.h>
 
+#include <engine/cuda/renderData.cuh>
+//@TODO: pass them as params.
 const unsigned int screenWidth = 1200;
 const unsigned int screenHeight = 800;
 
-
-class Renderer {
+class Renderer 
+{
 public:
-    Renderer(Camera* camera, SphereSprite* sphere) 
-        : _camera(camera), _sphere(sphere) 
-    {
-        image.resize(screenWidth * screenHeight);
-    }
-
 	std::vector<glm::vec3> image;
-	void Render()
-	{
-        for (int j = 0; j < screenHeight; ++j) {
-            for (int i = 0; i < screenWidth; ++i) {
-                // Normalise screen coordinates.
-                float u = float(i) / (screenWidth - 1);
-                float v = float(j) / (screenHeight - 1);
+    glm::vec3* d_image;
 
-                Ray ray = _camera->GetRay(u, v);
-                glm::vec3 color = glm::vec3(0, 0, 0); // Default background color
+    Renderer(Camera* camera, SphereSprite* sphere);
+    ~Renderer();
 
-                if (_sphere->Intersects(ray)) {
-                    color = glm::vec3(1, 0, 0); // Red color for the sphere
-                }
-                image[j * screenWidth + i] = color;
-            }
-        }
-	}
+    void UpdateCameraData();
+    void UpdateSphereData();
+    void Render(std::unique_ptr<InteropBuffer>& interopBuffer);
+    void RenderUsingCUDA(void* cudaPtr);
+
 private:
     Camera* _camera;
     SphereSprite* _sphere;
-
+    CameraData* d_cameraData;
+    SphereData* d_sphereData;
 };

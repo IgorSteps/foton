@@ -9,6 +9,8 @@
 #include <glm/glm.hpp>
 #include <engine/renderer.h>
 #include <engine/graphics/Texture.h>
+#include <engine/gl/PBOBuffer.h>
+#include <engine/cuda/InteropBuffer.h>
 class Engine {
 public:
 	Engine();
@@ -26,6 +28,8 @@ private:
 	std::unique_ptr<Shader> _basicShader;
 	std::unique_ptr<Renderer> _renderer;
 	std::unique_ptr<Texture> _texture;
+	std::unique_ptr <PBO> _pbo;
+	std::unique_ptr <InteropBuffer> _interopBuffer;
 
 	// FPS.
 	int _frameCount = 0;
@@ -33,3 +37,4 @@ private:
 	float _fpsUpdateInterval = 1.0f; // Update FPS every second
 	float _lastFPS = 0.0f; // Store the last calculated FPS value
 };
+

@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 #include <engine/Ray.h>
+#include "cuda_runtime.h"
 
 enum CameraMovement 
 {
@@ -18,6 +19,9 @@ public:
     glm::mat4 GetViewMatrix() const;
     float GetZoom() const;
     glm::vec3 GetPosition() const;
+    glm::vec3 GetUp() const;
+    glm::vec3 GetFront() const;
+    glm::vec3 GetRight() const;
     void ProcessKeyboard(CameraMovement direction, float deltaTime);
     void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
     void ProcessMouseScroll(float yOffset);

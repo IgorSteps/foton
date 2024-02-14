@@ -30,6 +30,21 @@ glm::vec3 Camera::GetPosition() const
     return  _position;
 }
 
+glm::vec3 Camera::GetUp() const
+{
+    return _up;
+}
+
+glm::vec3 Camera::GetFront() const
+{
+    return _front;
+}
+
+glm::vec3 Camera::GetRight() const
+{
+    return _right;
+}
+
 void Camera::ProcessKeyboard(CameraMovement direction, float deltaTime)
 {
     float velocity = _speed * deltaTime;

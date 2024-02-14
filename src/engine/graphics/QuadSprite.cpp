@@ -47,16 +47,6 @@ void QuadSprite::Update(float dt)
 
 void QuadSprite::Draw(std::unique_ptr<Shader>& shader)
 {
-    // colour
-    /*auto colorLocation = shader->GetUniformLocation("myColor");
-    glUniform4f(colorLocation, 0.0f, 1.0f, 0.0f, 1.0f);*/
-
-    // model
-    /*glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, position);
-    auto modelLocation = shader->GetUniformLocation("u_model");
-    glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));*/
-
     _buffer->Bind(false);
     _buffer->Draw();
 }

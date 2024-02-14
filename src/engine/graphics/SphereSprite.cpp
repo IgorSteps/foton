@@ -13,6 +13,11 @@ SphereSprite::SphereSprite(const std::string& name, float radius, int segments, 
     position = glm::vec3(1.0f, 0.0, 1.0f);
 }
 
+float SphereSprite::GetRadius() const
+{
+    return _radius;
+}
+
 void SphereSprite::Init()
 {
     std::vector<float> vertices;
@@ -55,7 +60,7 @@ void SphereSprite::Draw(std::unique_ptr<Shader>& shader)
     _buffer->Draw();
 }
 
-bool SphereSprite::Intersects(const Ray& r)
+ bool SphereSprite::Intersects(const Ray& r)
 {
     glm::vec3 oc = r.Origin() - position;
 
