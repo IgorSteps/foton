@@ -2,11 +2,11 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <engine/Camera.h>
-#include <engine/graphics/SphereSprite.h>
 #include <engine/cuda/InteropBuffer.h>
 
 #include <engine/cuda/renderData.cuh>
 #include "engine/hittables/Sphere.h"
+#include <memory>
 
 //@TODO: pass them as params.
 const unsigned int screenWidth = 1200;

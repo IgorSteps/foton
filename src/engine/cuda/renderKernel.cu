@@ -17,16 +17,6 @@ __device__ Ray GetRay(const CameraData* cam, float u, float v) {
     return Ray{ cam->position, rayDirection };
 }
 
-//__device__ bool Intersects(const Ray& ray, const SphereData* sphere) {
-//    glm::vec3 oc = ray.origin - sphere->position;
-//    float a = dot(ray.direction, ray.direction);
-//   float b = 2.0f * dot(oc, ray.direction);
-//    float c = dot(oc, oc) - sphere->radius * sphere->radius;
-//    float discriminant = b * b - 4 * a * c;
-//    return discriminant >= 0;
-//} 
-
-
 __global__ 
 void renderKernel(glm::vec3* output, int width, int height, CameraData* camData, Sphere* d_spheres, int size)
 {

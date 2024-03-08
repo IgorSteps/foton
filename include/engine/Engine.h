@@ -5,7 +5,6 @@
 #include <engine/Window.h>
 #include <engine/gl/Shader.h>
 #include <engine/graphics/QuadSprite.h>
-#include <engine/graphics/SphereSprite.h>
 #include <glm/glm.hpp>
 #include <engine/renderer.h>
 #include <engine/graphics/Texture.h>

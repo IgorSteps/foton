@@ -1,5 +1,5 @@
 #pragma once
-#include <engine/hittables/Hittable.h>
+#include <engine/Ray.h>
 #include "cuda_runtime.h"
 
 class Sphere

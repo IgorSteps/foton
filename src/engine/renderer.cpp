@@ -20,7 +20,6 @@ Renderer::Renderer(Camera* camera, std::vector<Sphere>& spheres)
     }
 
     UpdateCameraData();
-    //UpdateSphereData();
 }
 
 Renderer::~Renderer() {
@@ -41,17 +40,6 @@ void Renderer::UpdateCameraData() {
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to copy new CameraData: %s\n", cudaGetErrorString(error));
     }
-}
-
-void Renderer::UpdateSphereData() {
-   /* SphereData hostSphereData;
-    hostSphereData.position = _sphere->position;
-    hostSphereData.radius = _sphere->GetRadius();
-
-    cudaError_t error = cudaMemcpy(d_sphereData, &hostSphereData, sizeof(SphereData), cudaMemcpyHostToDevice);
-    if (error != cudaSuccess) {
-        fprintf(stderr, "Failed to copy new SphereData: %s\n", cudaGetErrorString(error));
-    }*/
 }
 
 void Renderer::Render(std::unique_ptr<InteropBuffer>& interopBuffer)

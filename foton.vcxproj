@@ -26,7 +26,6 @@
     <ClCompile Include="src\engine\gl\GL.cpp" />
     <ClCompile Include="src\engine\gl\Shader.cpp" />
     <ClCompile Include="src\engine\graphics\QuadSprite.cpp" />
-    <ClCompile Include="src\engine\graphics\SphereSprite.cpp" />
     <ClCompile Include="src\engine\graphics\Texture.cpp" />
     <ClCompile Include="src\engine\io\File.cpp" />
     <ClCompile Include="src\engine\message\EventQueue.cpp" />
@@ -42,8 +41,6 @@
     <ClInclude Include="include\engine\Camera.h" />
     <ClInclude Include="include\engine\gl\GL.h" />
     <ClInclude Include="include\engine\graphics\QuadSprite.h" />
-    <ClInclude Include="include\engine\graphics\SphereSprite.h" />
-    <ClInclude Include="include\engine\hittables\Hittable.h" />
     <ClInclude Include="include\engine\hittables\Sphere.h" />
     <ClInclude Include="include\engine\io\File.h" />
     <ClInclude Include="include\engine\gl\Shader.h" />
