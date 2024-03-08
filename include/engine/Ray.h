@@ -1,17 +1,13 @@
 #pragma once
 #include <glm/glm.hpp>
+#include "cuda_runtime.h"
 
-class Ray
-{
-public:
-	Ray(){}
-	Ray(const glm::vec3& origin, const glm::vec3& direction) : m_Origin(origin), m_Direction(direction) {}
+struct Ray {
+    glm::vec3 origin;
+    glm::vec3 direction;
 
-	glm::vec3 Origin() const;
-	glm::vec3 Direction() const;
-	glm::vec3 At(float t) const;
-
-private:
-	glm::vec3 m_Origin;
-	glm::vec3 m_Direction;
+    __device__ glm::vec3 At(float t) const
+    {
+        return origin + (t * direction);
+    }
 };

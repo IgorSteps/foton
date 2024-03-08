@@ -1,7 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glad/glad.h>
-#include <engine/Ray.h>
 #include "cuda_runtime.h"
 
 enum CameraMovement 
@@ -25,7 +24,6 @@ public:
     void ProcessKeyboard(CameraMovement direction, float deltaTime);
     void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
     void ProcessMouseScroll(float yOffset);
-    Ray GetRay(float u, float v) const;
 private:
     // Camera attributes.
     glm::vec3 _position;
