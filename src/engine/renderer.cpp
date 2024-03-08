@@ -1,8 +1,8 @@
 ﻿#include <engine/Renderer.h>
 #include "cuda_runtime.h"
 
-Renderer::Renderer(Camera* camera, SphereSprite* sphere)
-    : _camera(camera), _sphere(sphere)
+Renderer::Renderer(Camera* camera, std::vector<Sphere>& spheres)
+    : _camera(camera), _spheres(spheres)
 {
     // Allocate memory for camera and sphere data on the device
     cudaError_t error = cudaMalloc(&d_cameraData, sizeof(CameraData));
@@ -10,18 +10,22 @@ Renderer::Renderer(Camera* camera, SphereSprite* sphere)
         fprintf(stderr, "Failed to allocate memory for CameraData: %s\n", cudaGetErrorString(error));
     }
 
-    error = cudaMalloc(&d_sphereData, sizeof(SphereData));
+    error = cudaMalloc(&d_spheres, _spheres.size() * sizeof(Sphere));
     if (error != cudaSuccess) {
-        fprintf(stderr, "Failed to allocate memory for SphereData: %s\n", cudaGetErrorString(error));
+        fprintf(stderr, "Failed to allocate memory for Spheres: %s\n", cudaGetErrorString(error));
+    }
+    error = cudaMemcpy(d_spheres, _spheres.data(), _spheres.size() * sizeof(Sphere), cudaMemcpyHostToDevice);
+    if (error != cudaSuccess) {
+        fprintf(stderr, "Failed to copy Spheres: %s\n", cudaGetErrorString(error));
     }
 
     UpdateCameraData();
-    UpdateSphereData();
+    //UpdateSphereData();
 }
 
 Renderer::~Renderer() {
     cudaFree(d_cameraData);
-    cudaFree(d_sphereData);
+    cudaFree(d_spheres);
 }
 
 void Renderer::UpdateCameraData() {
@@ -40,14 +44,14 @@ void Renderer::UpdateCameraData() {
 }
 
 void Renderer::UpdateSphereData() {
-    SphereData hostSphereData;
+   /* SphereData hostSphereData;
     hostSphereData.position = _sphere->position;
     hostSphereData.radius = _sphere->GetRadius();
 
     cudaError_t error = cudaMemcpy(d_sphereData, &hostSphereData, sizeof(SphereData), cudaMemcpyHostToDevice);
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to copy new SphereData: %s\n", cudaGetErrorString(error));
-    }
+    }*/
 }
 
 void Renderer::Render(std::unique_ptr<InteropBuffer>& interopBuffer)
@@ -56,9 +60,9 @@ void Renderer::Render(std::unique_ptr<InteropBuffer>& interopBuffer)
 
     size_t size;
     void* cudaPtr = interopBuffer->GetCudaMappedPtr(&size);
-
+    int numSpheres = static_cast<int>(_spheres.size());
     // Update the PBO data via cudaPtr.
-   RenderUsingCUDA(cudaPtr);
+   RenderUsingCUDA(cudaPtr, numSpheres);
 
    interopBuffer->UnmapCudaResource();
 }

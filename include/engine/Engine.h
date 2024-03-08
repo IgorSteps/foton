@@ -11,6 +11,7 @@
 #include <engine/graphics/Texture.h>
 #include <engine/gl/PBOBuffer.h>
 #include <engine/cuda/InteropBuffer.h>
+#include <engine/hittables/Sphere.h>
 class Engine {
 public:
 	Engine();
@@ -24,13 +25,12 @@ private:
 	std::unique_ptr<Window> _window;
 	std::unique_ptr<Camera> _camera;
 	std::unique_ptr<QuadSprite> _quadSprite;
-	std::unique_ptr<SphereSprite> _sphereSprite;
 	std::unique_ptr<Shader> _basicShader;
 	std::unique_ptr<Renderer> _renderer;
 	std::unique_ptr<Texture> _texture;
 	std::unique_ptr <PBO> _pbo;
 	std::unique_ptr <InteropBuffer> _interopBuffer;
-
+	std::vector<Sphere> _spheres;
 	// FPS.
 	int _frameCount = 0;
 	float _timeSinceLastFPSUpdate = 0.0f;

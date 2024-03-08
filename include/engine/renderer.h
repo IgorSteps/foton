@@ -6,6 +6,8 @@
 #include <engine/cuda/InteropBuffer.h>
 
 #include <engine/cuda/renderData.cuh>
+#include "engine/hittables/Sphere.h"
+
 //@TODO: pass them as params.
 const unsigned int screenWidth = 1200;
 const unsigned int screenHeight = 800;
@@ -13,20 +15,17 @@ const unsigned int screenHeight = 800;
 class Renderer 
 {
 public:
-	std::vector<glm::vec3> image;
-    glm::vec3* d_image;
-
-    Renderer(Camera* camera, SphereSprite* sphere);
+    Renderer(Camera* camera, std::vector<Sphere>& spheres);
     ~Renderer();
 
     void UpdateCameraData();
     void UpdateSphereData();
     void Render(std::unique_ptr<InteropBuffer>& interopBuffer);
-    void RenderUsingCUDA(void* cudaPtr);
+    void RenderUsingCUDA(void* cudaPtr, int size);
 
 private:
+    std::vector<Sphere> _spheres;
     Camera* _camera;
-    SphereSprite* _sphere;
     CameraData* d_cameraData;
-    SphereData* d_sphereData;
+    Sphere* d_spheres;
 };
