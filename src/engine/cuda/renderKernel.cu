@@ -32,12 +32,18 @@ void renderKernel(glm::vec3* output, int width, int height, CameraData* camData,
     Ray ray = GetRay(camData, u, v);
     for (int x = 0; x < size; x++) 
     {
-        if (d_spheres[x].Hit(ray))
-        {
-            output[j * width + i] = glm::vec3(1.0, 0.0, 0.0); // Red color for the sphere
+        // sphere
+        float hitPoint = d_spheres[x].Hit(ray);
+        if (hitPoint > 0.0f) {
+            // the outward normal is in the direction of the hit point minus the center.
+            glm::vec3 normal = glm::normalize(ray.At(hitPoint) - glm::vec3(0, 0, -1));
+            glm::vec3 colour = normal;
+            //printf("__DEBUG__ colour: x=%f, y=%f, z=%f\n", colour.x, colour.y, colour.z);
+           output[j * width + i] = colour;
         }
-        else 
+        else
         {
+            // background
             glm::vec3 unitDirection = glm::normalize(ray.direction);
             auto a = 0.5f * (unitDirection.y + 1.0f);
             output[j * width + i] = (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
