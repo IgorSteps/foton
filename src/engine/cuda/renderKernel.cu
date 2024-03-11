@@ -32,12 +32,17 @@ void renderKernel(glm::vec3* output, int width, int height, CameraData* camData,
     Ray ray = GetRay(camData, u, v);
     for (int x = 0; x < size; x++) 
     {
-        if (d_spheres[x].Hit(ray))
-        {
-            output[j * width + i] = glm::vec3(1.0, 0.0, 0.0); // Red color for the sphere
+        // sphere
+        float hitPoint = d_spheres[x].Hit(ray);
+        if (hitPoint > 0.0f) {
+            // the outward normal is in the direction of the hit point minus the center.
+            glm::vec3 normal = glm::normalize(ray.At(hitPoint) - d_spheres[x].GetCenter());
+            glm::vec3 colour = normal;
+            output[j * width + i] = colour;
         }
-        else 
+        else
         {
+            // background
             glm::vec3 unitDirection = glm::normalize(ray.direction);
             auto a = 0.5f * (unitDirection.y + 1.0f);
             output[j * width + i] = (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
@@ -45,14 +50,14 @@ void renderKernel(glm::vec3* output, int width, int height, CameraData* camData,
     }
 }
 
-__global__ void printDebugSphereProperties(Sphere* spheres, int numSpheres) {
-    if (threadIdx.x == 0 && blockIdx.x == 0) {
-        // Print properties of the first sphere
-        printf("Sphere 0 - Center: (%f, %f, %f), Radius: %f\n",
-            spheres[0]._center.x, spheres[0]._center.y, spheres[0]._center.z,
-            spheres[0]._radius);
-    }
-}
+//__global__ void printDebugSphereProperties(Sphere* spheres, int numSpheres) {
+//    if (threadIdx.x == 0 && blockIdx.x == 0) {
+//        // Print properties of the first sphere
+//        printf("Sphere 0 - Center: (%f, %f, %f), Radius: %f\n",
+//            spheres[0].GetCenter().x, spheres[0].GetCenter().y, spheres[0].GetCenter().z,
+//            spheres[0].GetRadius());
+//    }
+//}
 
 void Renderer::RenderUsingCUDA(void* cudaPtr, int size)
 {

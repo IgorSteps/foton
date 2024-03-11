@@ -86,11 +86,13 @@ void Engine::init()
     // @TODO: Set aspect ratio based on viewport width & height.
     _window = std::make_unique<Window>(SCR_WIDTH, SCR_HEIGHT, "Foton");
     _camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
+    
     _quadSprite = std::make_unique<QuadSprite>("Test quad", 0.5f, 0.5f);
-    Sphere sphere(glm::vec3(1.0f, 0.0f, 1.0f), 1.0f);
+    _texture = std::make_unique<Texture>((float)SCR_WIDTH, (float)SCR_HEIGHT);
+    
+    Sphere sphere(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f);
     _spheres.push_back(sphere);
     _renderer = std::make_unique<Renderer>(_camera.get(), _spheres);
-    _texture = std::make_unique<Texture>((float)SCR_WIDTH, (float)SCR_HEIGHT);
     
     loadShaders();
     _basicShader->Use();
@@ -111,7 +113,6 @@ void Engine::update(float dt)
     _pbo->unbind();
 
     _renderer->UpdateCameraData();
-    _renderer->UpdateSphereData();
 }
 
 void Engine::draw()
