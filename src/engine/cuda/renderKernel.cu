@@ -36,10 +36,9 @@ void renderKernel(glm::vec3* output, int width, int height, CameraData* camData,
         float hitPoint = d_spheres[x].Hit(ray);
         if (hitPoint > 0.0f) {
             // the outward normal is in the direction of the hit point minus the center.
-            glm::vec3 normal = glm::normalize(ray.At(hitPoint) - glm::vec3(0, 0, -1));
+            glm::vec3 normal = glm::normalize(ray.At(hitPoint) - d_spheres[x].GetCenter());
             glm::vec3 colour = normal;
-            //printf("__DEBUG__ colour: x=%f, y=%f, z=%f\n", colour.x, colour.y, colour.z);
-           output[j * width + i] = colour;
+            output[j * width + i] = colour;
         }
         else
         {
@@ -51,14 +50,14 @@ void renderKernel(glm::vec3* output, int width, int height, CameraData* camData,
     }
 }
 
-__global__ void printDebugSphereProperties(Sphere* spheres, int numSpheres) {
-    if (threadIdx.x == 0 && blockIdx.x == 0) {
-        // Print properties of the first sphere
-        printf("Sphere 0 - Center: (%f, %f, %f), Radius: %f\n",
-            spheres[0]._center.x, spheres[0]._center.y, spheres[0]._center.z,
-            spheres[0]._radius);
-    }
-}
+//__global__ void printDebugSphereProperties(Sphere* spheres, int numSpheres) {
+//    if (threadIdx.x == 0 && blockIdx.x == 0) {
+//        // Print properties of the first sphere
+//        printf("Sphere 0 - Center: (%f, %f, %f), Radius: %f\n",
+//            spheres[0].GetCenter().x, spheres[0].GetCenter().y, spheres[0].GetCenter().z,
+//            spheres[0].GetRadius());
+//    }
+//}
 
 void Renderer::RenderUsingCUDA(void* cudaPtr, int size)
 {

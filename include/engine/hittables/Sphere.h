@@ -18,7 +18,7 @@ public:
         float b = 2.0f * glm::dot(oc, r.direction);
         float c = dot(oc, oc) - _radius * _radius;
         float discriminant = b * b - 4 * a * c;
-        // return discriminant > 0
+
         if (discriminant < 0) 
         {  
             return -1.0;
@@ -26,14 +26,21 @@ public:
         else 
         {
             float t = (-b - sqrt(discriminant)) / (2.0 * a);
-            //printf("__HIT__, t = %f \n", t);
             return t;
         }
     }
 
+    __device__ glm::vec3 GetCenter() const
+    {
+        return _center;
+    }
 
+    __device__ float GetRadius() const
+    {
+        return _radius;
+    }
 
+private:
     glm::vec3 _center;
     float _radius;
-private:
 };
