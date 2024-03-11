@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 #include "cuda_runtime.h"
+#include <engine/message/EventQueue.h>
 
 enum CameraMovement 
 {
@@ -15,15 +16,17 @@ class Camera
 {
 public:
     Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch);
-    glm::mat4 GetViewMatrix() const;
+
     float GetZoom() const;
     glm::vec3 GetPosition() const;
     glm::vec3 GetUp() const;
     glm::vec3 GetFront() const;
     glm::vec3 GetRight() const;
+
+    void Update(float dt);
+
     void ProcessKeyboard(CameraMovement direction, float deltaTime);
     void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
-    void ProcessMouseScroll(float yOffset);
 private:
     // Camera attributes.
     glm::vec3 _position;
@@ -43,3 +46,5 @@ private:
 
     void updateCameraVectors();
 };
+
+extern EventQueue eventQueue;

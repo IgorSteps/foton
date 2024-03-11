@@ -68,6 +68,7 @@ void Renderer::RenderUsingCUDA(void* cudaPtr, int size)
         (800 + threadsPerBlock.y - 1) / threadsPerBlock.y
     );
 
+    // TODO: Get width/height from engine
     renderKernel <<<numBlocks, threadsPerBlock>>> (static_cast<glm::vec3*>(cudaPtr), 1200, 800, d_cameraData, d_spheres, size);
     //printDebugSphereProperties << <1, 1 >> > (d_spheres, size);
 

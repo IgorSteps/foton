@@ -1,13 +1,14 @@
-#include "engine/graphics/QuadSprite.h"
+#include "engine/graphics/Sprite.h"
 #include "glm/gtc/matrix_transform.hpp"
-#include "glm/ext.hpp"
-QuadSprite::QuadSprite(const std::string& name, float width, float height) 
-    : Sprite(name, width, height)
+#include "glm/glm.hpp"
+#include <string>
+
+Sprite::Sprite() 
 {
     position = glm::vec3(-1.0f, 0.0f, 1.0f);
 }
 
-void QuadSprite::Init()
+void Sprite::Init()
 {
     // top left corner at 0,0.
     std::vector<float>  vertices = {
@@ -41,11 +42,11 @@ void QuadSprite::Init()
     _buffer->Unbind();
 }
 
-void QuadSprite::Update(float dt)
+void Sprite::Update(float dt)
 {
 }
 
-void QuadSprite::Draw(std::unique_ptr<Shader>& shader)
+void Sprite::Draw(std::unique_ptr<Shader>& shader)
 {
     _buffer->Bind(false);
     _buffer->Draw();

@@ -9,12 +9,14 @@
     <ClCompile Include="src\engine\Renderer.cpp" />
     <ClCompile Include="src\engine\Window.cpp" />
     <ClCompile Include="src\engine\io\File.cpp" />
-    <ClCompile Include="src\engine\graphics\QuadSprite.cpp" />
+    <ClCompile Include="src\engine\graphics\Sprite.cpp" />
     <ClCompile Include="src\engine\Camera.cpp" />
     <ClCompile Include="src\engine\gl\GL.cpp" />
     <ClCompile Include="src\engine\message\EventQueue.cpp" />
     <ClCompile Include="src\engine\graphics\Texture.cpp" />
     <ClCompile Include="src\engine\cuda\InteropBuffer.cpp" />
+    <ClCompile Include="src\engine\gl\PBOBuffer.cpp" />
+    <ClCompile Include="src\engine\RayTracedImage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\utils\colour.h" />
@@ -23,9 +25,8 @@
     <ClInclude Include="include\engine\Window.h" />
     <ClInclude Include="include\engine\io\File.h" />
     <ClInclude Include="include\engine\gl\Shader.h" />
-    <ClInclude Include="include\engine\graphics\Sprite.h" />
     <ClInclude Include="include\engine\gl\GLBuffer.h" />
-    <ClInclude Include="include\engine\graphics\QuadSprite.h" />
+    <ClInclude Include="include\engine\graphics\Sprite.h" />
     <ClInclude Include="include\engine\Camera.h" />
     <ClInclude Include="include\engine\gl\GL.h" />
     <ClInclude Include="include\engine\message\Event.h" />
@@ -36,6 +37,7 @@
     <ClInclude Include="include\engine\cuda\InteropBuffer.h" />
     <ClInclude Include="include\engine\gl\PBOBuffer.h" />
     <ClInclude Include="include\engine\hittables\Sphere.h" />
+    <ClInclude Include="include\engine\RayTracedImage.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw\glfw3.lib" />

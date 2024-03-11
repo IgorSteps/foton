@@ -1,10 +1,8 @@
 #pragma once
-
-#include <glad/glad.h>
 #include <vector>
 #include <glm/glm.hpp>
-#include <memory>
 #include <engine/gl/Shader.h>
+#include <memory>
 
 class Texture
 {

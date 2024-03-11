@@ -34,6 +34,7 @@ void Renderer::UpdateCameraData() {
     hostCameraData.up = _camera->GetUp();
     hostCameraData.right = _camera->GetRight();
     hostCameraData.fov = _camera->GetZoom();
+    // TODO: Get width/height from engine
     hostCameraData.aspectRatio = 1200.0f / 800.0f;
 
     cudaError_t error = cudaMemcpy(d_cameraData, &hostCameraData, sizeof(CameraData), cudaMemcpyHostToDevice);
@@ -42,15 +43,16 @@ void Renderer::UpdateCameraData() {
     }
 }
 
-void Renderer::Render(std::unique_ptr<InteropBuffer>& interopBuffer)
+void Renderer::Update(std::unique_ptr<InteropBuffer>& interopBuffer)
 {
     interopBuffer->MapCudaResource();
 
     size_t size;
     void* cudaPtr = interopBuffer->GetCudaMappedPtr(&size);
     int numSpheres = static_cast<int>(_spheres.size());
+    
     // Update the PBO data via cudaPtr.
-   RenderUsingCUDA(cudaPtr, numSpheres);
+    RenderUsingCUDA(cudaPtr, numSpheres);
 
-   interopBuffer->UnmapCudaResource();
+    interopBuffer->UnmapCudaResource();
 }
