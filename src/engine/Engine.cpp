@@ -10,8 +10,8 @@ using std::chrono::duration_cast;
 using std::chrono::duration;
 using std::chrono::seconds;
 
-const unsigned int SCR_WIDTH = 1200;
-const unsigned int SCR_HEIGHT = 800;
+const float SCR_WIDTH = 1200.0f;
+const float SCR_HEIGHT = 800.0f;
 
 GLenum glCheckError_(const char* file, int line)
 {
@@ -61,7 +61,7 @@ void Engine::run()
             // Check if it's time to update the FPS display
             if (_timeSinceLastFPSUpdate >= _fpsUpdateInterval)
             {
-                _lastFPS = _frameCount / _timeSinceLastFPSUpdate; // Calculate FPS
+                _lastFPS = _frameCount / _timeSinceLastFPSUpdate;
                 _frameCount = 0;
                 _timeSinceLastFPSUpdate = 0.0f;
 
@@ -84,35 +84,41 @@ void Engine::run()
 void Engine::init()
 {
     // @TODO: Set aspect ratio based on viewport width & height.
+    
+    // Make window and initilise OpenGL context.
     _window = std::make_unique<Window>(SCR_WIDTH, SCR_HEIGHT, "Foton");
+
+    // Load shaders.
+    loadShaders();
+    _shader->Use();
+
+    // Initilise world.
     _camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
-    
-    _quadSprite = std::make_unique<QuadSprite>("Test quad", 0.5f, 0.5f);
-    _texture = std::make_unique<Texture>((float)SCR_WIDTH, (float)SCR_HEIGHT);
-    
+    _rayTracedImage = std::make_unique<RayTracedImage>(SCR_WIDTH, SCR_HEIGHT);
+    _rayTracedImage->Init();
+    _interopBuffer = std::make_unique<InteropBuffer>(_rayTracedImage->GetPBOID());
+
+    // Spheres.
     Sphere sphere(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f);
     _spheres.push_back(sphere);
+
+    // Make renderer.
     _renderer = std::make_unique<Renderer>(_camera.get(), _spheres);
-    
-    loadShaders();
-    _basicShader->Use();
-
-    _quadSprite->Init();
-    _texture->Init();
-
-    _pbo = std::make_unique<PBO>(SCR_WIDTH, SCR_HEIGHT);
-    _interopBuffer = std::make_unique<InteropBuffer>(_pbo->getID());
 }
 
 void Engine::update(float dt)
 {
-    updateCameraFromEvent(_camera, dt);
+    // Update Camera data on CPU.
+    _camera->Update(dt);
 
-    _pbo->bind();
-    _texture->Update();
-    _pbo->unbind();
+    // Update PBO with CUDA.
+    _renderer->Update(_interopBuffer);
 
+    // Update Camera data on GPU.
     _renderer->UpdateCameraData();
+
+    // Update image: buffers, textures...
+    _rayTracedImage->Update();
 }
 
 void Engine::draw()
@@ -120,18 +126,11 @@ void Engine::draw()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // could be moved into update()?
-    _renderer->Render(_interopBuffer);
-   
-    // could be encapsulated better?
-    _pbo->bind();
-    _texture->Draw(_basicShader);
-    _quadSprite->Draw(_basicShader);
-    _pbo->unbind();
+    // Draw final image.
+    _rayTracedImage->Draw(_shader);
 
     glCheckError();
 }
-
 
 void Engine::loadShaders()
 {
@@ -139,36 +138,6 @@ void Engine::loadShaders()
     std::string vertexShaderSource = FileIO::ReadFile(".\\src\\engine\\gl\\shaders\\basicVertex.vert");
     std::string fragmentShaderSource = FileIO::ReadFile(".\\src\\engine\\gl\\shaders\\basicFrag.frag");
 
-    _basicShader = std::make_unique<Shader>("Basic");
-    _basicShader->Load(vertexShaderSource, fragmentShaderSource);
-}
-
-void Engine::updateCameraFromEvent(std::unique_ptr<Camera>& camera, float dt)
-{
-    Event event;
-
-    while (eventQueue.PollEvent(event))
-    {
-        switch (event.type)
-        {
-        case EventType::MoveForward:
-            camera->ProcessKeyboard(FORWARD, dt);
-            break;
-        case EventType::MoveBackward:
-            camera->ProcessKeyboard(BACKWARD, dt);
-            break;
-        case EventType::MoveLeft:
-            camera->ProcessKeyboard(LEFT, dt);
-            break;
-        case EventType::MoveRight:
-            camera->ProcessKeyboard(RIGHT, dt);
-            break;
-        case EventType::LookAround:
-            camera->ProcessMouseMovement(event.xoffset, event.yoffset);
-            break;
-        case EventType::Zoom:
-            camera->ProcessMouseScroll(event.yoffset);
-            break;
-        }
-    }
+    _shader = std::make_unique<Shader>("Basic");
+    _shader->Load(vertexShaderSource, fragmentShaderSource);
 }

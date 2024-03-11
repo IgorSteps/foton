@@ -8,10 +8,6 @@
 #include "engine/hittables/Sphere.h"
 #include <memory>
 
-//@TODO: pass them as params.
-const unsigned int screenWidth = 1200;
-const unsigned int screenHeight = 800;
-
 class Renderer 
 {
 public:
@@ -19,8 +15,7 @@ public:
     ~Renderer();
 
     void UpdateCameraData();
-    void UpdateSphereData();
-    void Render(std::unique_ptr<InteropBuffer>& interopBuffer);
+    void Update(std::unique_ptr<InteropBuffer>& interopBuffer);
     void RenderUsingCUDA(void* cudaPtr, int size);
 
 private:
