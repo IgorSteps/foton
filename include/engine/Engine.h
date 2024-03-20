@@ -20,12 +20,13 @@ public:
 
 private:
 	std::unique_ptr<Window> _window;
-	std::unique_ptr<Camera> _camera;
+	std::unique_ptr<Camera> h_Camera;
 	std::unique_ptr<Shader> _shader;
 	std::unique_ptr<Renderer> _renderer;
 	std::unique_ptr<RayTracedImage> _rayTracedImage;
 	std::unique_ptr <InteropBuffer> _interopBuffer;
 	std::vector<Sphere> _spheres;
+	Light* light;
 
 	// FPS.
 	int _frameCount = 0;

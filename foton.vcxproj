@@ -45,6 +45,7 @@
     <ClInclude Include="include\engine\hittables\Sphere.h" />
     <ClInclude Include="include\engine\io\File.h" />
     <ClInclude Include="include\engine\gl\Shader.h" />
+    <ClInclude Include="include\engine\Light.h" />
     <ClInclude Include="include\engine\message\Event.h" />
     <ClInclude Include="include\engine\message\EventQueue.h" />
     <ClInclude Include="include\engine\Engine.h" />
