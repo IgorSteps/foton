@@ -93,29 +93,46 @@ void Engine::init()
     _shader->Use();
 
     // Initilise world.
-    _camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
+    h_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
     _rayTracedImage = std::make_unique<RayTracedImage>(SCR_WIDTH, SCR_HEIGHT);
     _rayTracedImage->Init();
     _interopBuffer = std::make_unique<InteropBuffer>(_rayTracedImage->GetPBOID());
 
     // Spheres.
-    Sphere sphere(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f);
-    _spheres.push_back(sphere);
+    Sphere mainSphere(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, glm::vec3(1.0f, 0.5f, 0.31f), false);
+    _spheres.push_back(mainSphere);
+   /* Sphere mainSphere1(glm::vec3(1.0f, 2.0f, -2.0f), 0.5f, glm::vec3(1.0f, 0.5f, 0.31f), false);
+    _spheres.push_back(mainSphere1);  
+    Sphere mainSphere2(glm::vec3(1.0f, -2.0f, -2.0f), 0.5f, glm::vec3(1.0f, 0.5f, 0.31f), false);
+    _spheres.push_back(mainSphere2); 
+    Sphere mainSphere3(glm::vec3(-1.0f, -2.0f, -3.0f), 0.5f, glm::vec3(1.0f, 0.5f, 0.31f), false);
+    _spheres.push_back(mainSphere3);  
+    Sphere mainSphere4(glm::vec3(2.0f, 2.0f, -2.0f), 0.5f, glm::vec3(1.0f, 0.5f, 0.31f), false);
+    _spheres.push_back(mainSphere4);*/
+    Sphere lightSphere(glm::vec3(1.0f, 1.0f, 0.5f), 0.25f, glm::vec3(1.0f), true);
+    _spheres.push_back(lightSphere);
 
+    // Lights.
+    light = new Light(glm::vec3(1.0f, 1.0f, 0.5f), glm::vec3(1.0f), 1.5);
+    
     // Make renderer.
-    _renderer = std::make_unique<Renderer>(_camera.get(), _spheres);
+    _renderer = std::make_unique<Renderer>(h_Camera.get(), light, _spheres);
 }
 
 void Engine::update(float dt)
 {
     // Update Camera data on CPU.
-    _camera->Update(dt);
+    h_Camera->Update(dt);
 
     // Update PBO with CUDA.
     _renderer->Update(_interopBuffer);
 
     // Update Camera data on GPU.
     _renderer->UpdateCameraData();
+
+    // Update light.
+    light->Update(dt);
+    _renderer->UpdateLightData();
 
     // Update image: buffers, textures...
     _rayTracedImage->Update();
