@@ -80,7 +80,16 @@ __device__ glm::vec3 ComputePhongIllumination(
 
 
 __global__
-void renderKernel(glm::vec3* output, int width, int height, CameraData* camData, Sphere* d_spheres, int numOfSpheres, Light* d_light, Ground* d_ground)
+void renderKernel(
+    glm::vec3* output,
+    int width,
+    int height,
+    CameraData* camData,
+    Sphere* d_spheres,
+    int numOfSpheres,
+    Light* d_light,
+    Ground* d_ground
+)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -133,7 +142,6 @@ void renderKernel(glm::vec3* output, int width, int height, CameraData* camData,
         color = (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
     }
 
-
     output[j * width + i] = color;
 }
 
@@ -151,7 +159,8 @@ void Renderer::RenderUsingCUDA(float width, float height, void* cudaPtr, int num
     cudaDeviceSynchronize();
 
     cudaError_t error = cudaGetLastError();
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess) 
+    {
         fprintf(stderr, "CUDA error in kernel launch: %s\n", cudaGetErrorString(error));
     }
 }
