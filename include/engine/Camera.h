@@ -23,8 +23,6 @@ public:
     glm::vec3 GetFront() const;
     glm::vec3 GetRight() const;
 
-    void Update(float dt);
-
     void ProcessKeyboard(CameraMovement direction, float deltaTime);
     void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
 private:

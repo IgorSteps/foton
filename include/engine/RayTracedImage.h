@@ -7,21 +7,17 @@
 class RayTracedImage
 {
 public:
-	RayTracedImage(float width, float height);
+	RayTracedImage(PBO* pbo, float width, float height);
 	~RayTracedImage();
 
 	void Init();
-	void Update();
+	void Update(float width, float height);
 	void Draw(std::unique_ptr<Shader>& shader);
-
-	int GetPBOID() const {
-		return _pbo->GetID();
-	}
 
 private:
 	float _width, _height;
+	PBO* _pbo;
 
 	std::unique_ptr<Sprite> _sprite;
 	std::unique_ptr<Texture> _texture;
-	std::unique_ptr<PBO> _pbo;
 };

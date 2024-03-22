@@ -12,7 +12,7 @@ public:
 	GLuint GetID() const;
 
 	void Init();
-	void Update();
+	void Update(float width, float height);
 	void Bind();
 	void ActivateAndBind();
 	void Draw(std::unique_ptr<Shader>& shader);

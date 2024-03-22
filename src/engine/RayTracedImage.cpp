@@ -1,10 +1,7 @@
 #include "engine/RayTracedImage.h"
 
-RayTracedImage::RayTracedImage(float width, float height) :
-	_width(width), _height(height)
-{
-
-}
+RayTracedImage::RayTracedImage(PBO* pbo, float width, float height) :
+	_width(width), _height(height), _pbo(pbo) {}
 
 RayTracedImage::~RayTracedImage()
 {
@@ -14,16 +11,15 @@ void RayTracedImage::Init()
 {
 	_sprite = std::make_unique<Sprite>();
 	_texture = std::make_unique<Texture>(_width, _height);
-	_pbo = std::make_unique<PBO>(_width, _height);
 
 	_sprite->Init();
 	_texture->Init();
 }
 
-void RayTracedImage::Update()
+void RayTracedImage::Update(float width, float height)
 {
 	_pbo->Bind();
-	_texture->Update();
+	_texture->Update(width, height);
 	_pbo->Unbind();
 }
 

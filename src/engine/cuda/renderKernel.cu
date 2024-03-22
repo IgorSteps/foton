@@ -137,38 +137,16 @@ void renderKernel(glm::vec3* output, int width, int height, CameraData* camData,
     output[j * width + i] = color;
 }
 
-
-
-// For debugging
-// 
-__global__ void printDebugSphereProperties(Sphere* spheres, int numSpheres) {
-    if (threadIdx.x == 0 && blockIdx.x == 0) {
-        for (int x = 0; x < numSpheres; ++x)
-        {
-            // Print properties of the first sphere
-            printf("Sphere %i - Center: (%f, %f, %f), Radius: %f\n",
-                x,
-                spheres[x].GetCenter().x,
-                spheres[x].GetCenter().y,
-                spheres[x].GetCenter().z,
-                spheres[x].GetRadius()
-            );
-        }
-    }
-}
-
-void Renderer::RenderUsingCUDA(void* cudaPtr, int numOfSphere)
+void Renderer::RenderUsingCUDA(float width, float height, void* cudaPtr, int numOfSpheres)
 {
     // Launch CUDA kernel
     dim3 threadsPerBlock(16, 16);
     dim3 numBlocks(
-        (1200 + threadsPerBlock.x - 1) / threadsPerBlock.x,
-        (800 + threadsPerBlock.y - 1) / threadsPerBlock.y
+        (width + threadsPerBlock.x - 1) / threadsPerBlock.x,
+        (height + threadsPerBlock.y - 1) / threadsPerBlock.y
     );
 
-    // TODO: Get width/height from engine
-    renderKernel << <numBlocks, threadsPerBlock >> > (static_cast<glm::vec3*>(cudaPtr), 1200, 800, d_cameraData, d_spheres, numOfSphere, d_light, d_Ground);
-    //printDebugSphereProperties << <1, 1 >> > (d_spheres, numOfSphere);
+    renderKernel <<<numBlocks, threadsPerBlock>>> (static_cast<glm::vec3*>(cudaPtr), width, height, d_cameraData, d_spheres, numOfSpheres,  d_light,  d_Ground);
 
     cudaDeviceSynchronize();
 

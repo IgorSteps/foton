@@ -16,10 +16,10 @@ public:
     Renderer(Ground& ground, Camera* camera, Light* light, std::vector<Sphere>& spheres);
     ~Renderer();
 
-    void UpdateCameraData();
+    void UpdateCameraData(float width, float height);
     void UpdateLightData();
-    void Update(std::unique_ptr<InteropBuffer>& interopBuffer);
-    void RenderUsingCUDA(void* cudaPtr, int numOfSphere);
+    void Update(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer);
+    void RenderUsingCUDA(float width, float height, void* cudaPtr, int numOfSphere);
 
 private:
     // host entities:

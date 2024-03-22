@@ -9,11 +9,3 @@ struct CameraData
     float fov;
     float aspectRatio;
 };
-
-struct SphereData 
-{
-    glm::vec3 position;
-    float radius;
-};
-
-__global__ void renderKernel(glm::vec3* colors, int width, int height, CameraData* camData, SphereData* sphereData);
