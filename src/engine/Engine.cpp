@@ -10,6 +10,8 @@ using std::chrono::duration_cast;
 using std::chrono::duration;
 using std::chrono::seconds;
 
+float OLD_SCR_WIDTH = 1200.0f;
+float OLD_SCR_HEIGHT = 800.0f;
 float SCR_WIDTH = 1200.0f;
 float SCR_HEIGHT = 800.0f;
 
@@ -59,43 +61,45 @@ void Engine::run()
 }
 
 void Engine::init()
-{
-    // @TODO: Set aspect ratio based on viewport width & height.
-    
+{    
     // Make window and initilise OpenGL context.
     _window = std::make_unique<Window>(SCR_WIDTH, SCR_HEIGHT, "Foton");
 
-    // Load shaders.
+    // Shaders:
     loadShaders();
     _shader->Use();
 
-    // Initilise world.
-    _camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
-
+    // PBO:
     _pbo = new PBO(SCR_WIDTH, SCR_HEIGHT);
+
+    // Interop buffer:
     _interopBuffer = std::make_unique<InteropBuffer>(_pbo);
 
+    // Ray-Traced image
     _rayTracedImage = std::make_unique<RayTracedImage>(_pbo, SCR_WIDTH, SCR_HEIGHT);
     _rayTracedImage->Init();
 
+    // ------------------------------------
+    //              SETUP WORLD
+    // ------------------------------------
+    // Camera:
+    _camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 
-    // Ground
+    // Ground:
     Ground ground(glm::vec3(0.0, -1.0f, 0.0), glm::vec3(0.0f, 1.0f, 0.0f));
 
-    // Spheres.
+    // Spheres:
     Sphere mainSphere(glm::vec3(0.0f, 0.0f, -1.0f), 1.0f, glm::vec3(1.0f, 0.5f, 0.31f), false);
     _spheres.push_back(mainSphere);
 
     Sphere lightSphere(glm::vec3(3.0f, 3.0f, -0.5f), 0.3f, glm::vec3(1.0f), true);
     _spheres.push_back(lightSphere);
 
-    // Lights.
+    // Light:
     light = new Light(glm::vec3(3.0f, 3.0f, -0.5f), glm::vec3(1.0f), 1.5);
     
-    // Make renderer.
+    // Create Render system:
     _renderer = std::make_unique<Renderer>(ground, _camera.get(), light, _spheres);
-
-    //glCheckError();
 
 }
 
@@ -103,8 +107,12 @@ void Engine::update(float dt)
 {
     processQueue(dt);
 
-    // Update InteropBuffer with resized PBO.
-    _interopBuffer->Update(SCR_WIDTH, SCR_HEIGHT);
+    // If resized window:
+    if (SCR_WIDTH != OLD_SCR_WIDTH && SCR_HEIGHT != OLD_SCR_HEIGHT) 
+    {
+        // Update InteropBuffer with resized PBO.
+        _interopBuffer->Update(SCR_WIDTH, SCR_HEIGHT);
+    }
 
     // Update PBO data with CUDA.
     _renderer->Update(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
@@ -112,11 +120,7 @@ void Engine::update(float dt)
     // Update Camera data on GPU.
     _renderer->UpdateCameraData(SCR_WIDTH, SCR_HEIGHT);
 
-    // Update light.
-    light->Update(dt);
-    _renderer->UpdateLightData();
-
-    // Update image: buffers, textures...
+    // Update ray traced image: texture.
     _rayTracedImage->Update(SCR_WIDTH, SCR_HEIGHT);
 }
 
@@ -148,7 +152,9 @@ void  Engine::processQueue(float dt)
         switch (event.type)
         {
         case EventType::WindowResize:
-            //printf("Width %i, height %i", event.width, event.height);
+            // Setup old screen dimensions.
+            OLD_SCR_WIDTH = SCR_WIDTH;
+            OLD_SCR_HEIGHT = SCR_HEIGHT;
 
             SCR_WIDTH = event.width;
             SCR_HEIGHT = event.height;
