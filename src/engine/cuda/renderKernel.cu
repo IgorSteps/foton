@@ -17,24 +17,70 @@ __device__ Ray GetRay(const CameraData* cam, float u, float v) {
     return Ray{ cam->position, rayDirection };
 }
 
-__device__ glm::vec3 ComputePhongIllumination(Light* light, const HitData& hit, const glm::vec3& objectColor) 
+__device__ bool isInShadow(const Ray& ray, const Sphere* d_spheres, const int numOfSpheres, float lightDist)
 {
-    // Ambient.
-    float ambientStrength = 0.1;
-    glm::vec3 ambient = ambientStrength * light->color;
+    HitData tempHit;
+    for (int i = 0; i < numOfSpheres; ++i)
+    {
+        if (d_spheres[i].Hit(ray, 0.001f, lightDist, tempHit))
+        {
+            if (!d_spheres[i].IsLight())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
 
-    // Diffuse.
-    glm::vec3 lightDir = glm::normalize(light->position - hit.normal);
-    float diff = max(glm::dot(hit.normal, lightDir), 0.0f);
-    glm::vec3 diffuse = diff * light->color;
-
-    glm::vec3 result = (diffuse + ambient) * objectColor;
-    return result;
-
+    return false;
 }
 
-__global__ 
-void renderKernel(glm::vec3* output, int width, int height, CameraData* camData, Sphere* d_spheres, int numOfSpheres, Light* d_light)
+__device__ glm::vec3 ComputePhongIllumination(
+    Light* light,
+    const HitData& hit,
+    const Sphere* d_spheres,
+    int numOfSpheres,
+    const glm::vec3& objectColor
+)
+{
+    glm::vec3 lightDir = glm::normalize(light->position - hit.point);
+
+    // Setup shadow ray.
+    Ray shadowRay;
+
+    shadowRay.origin = hit.point;
+    shadowRay.direction = lightDir;
+    float distanceToLight = glm::length(light->position - hit.point);
+
+    // Check if the point is in shadow
+    bool inShadow = isInShadow(shadowRay, d_spheres, numOfSpheres, distanceToLight);
+
+    // Ambient.
+    float ambientStrength = 0.1f;
+    glm::vec3 ambient = ambientStrength * light->color;
+
+    if (inShadow) 
+    {
+        // If in shadow, only ambient light
+        return ambient * objectColor;
+    }
+    else 
+    {
+        // Diffuse.
+        float diff = max(glm::dot(hit.normal, lightDir), 0.0f);
+        glm::vec3 diffuse = diff * light->color;
+
+        glm::vec3 result = (diffuse + ambient) * objectColor;
+        return result;
+    }
+}
+
+
+__global__
+void renderKernel(glm::vec3* output, int width, int height, CameraData* camData, Sphere* d_spheres, int numOfSpheres, Light* d_light, Ground* d_ground)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -55,30 +101,38 @@ void renderKernel(glm::vec3* output, int width, int height, CameraData* camData,
     // Start with black colour.
     glm::vec3 color = glm::vec3(0.0f);
 
-    for (int x = 0; x < numOfSpheres; x++) 
+    for (int x = 0; x < numOfSpheres; x++)
     {
         if (d_spheres[x].Hit(ray, 0.001f, closestSoFar, hitData))
         {
             closestSoFar = hitData.t;
             hitSomething = true;
 
-            if (!d_spheres[x].IsLight()) 
+            if (!d_spheres[x].IsLight())
             {
-                color += ComputePhongIllumination(d_light, hitData, d_spheres[x].GetColour());
-
+                color += ComputePhongIllumination(d_light, hitData, d_spheres, numOfSpheres, d_spheres[x].GetColour());
             }
-            else 
+            else
             {
                 color = d_spheres[x].GetColour();
-                break;
             }
         }
     }
 
-    if (!hitSomething) 
+    if (!hitSomething && d_ground->Hit(ray, closestSoFar, hitData))
     {
-        color = glm::vec3(0.1f);
+        closestSoFar = hitData.t;
+        hitSomething = true;
+        color = ComputePhongIllumination(d_light, hitData, d_spheres, numOfSpheres, d_ground->groundColor);
     }
+
+    if (!hitSomething)
+    {
+        glm::vec3 unitDirection = glm::normalize(ray.direction);
+        auto a = 0.5f * (unitDirection.y + 1.0f);
+        color = (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
+    }
+
 
     output[j * width + i] = color;
 }
@@ -113,7 +167,7 @@ void Renderer::RenderUsingCUDA(void* cudaPtr, int numOfSphere)
     );
 
     // TODO: Get width/height from engine
-    renderKernel <<<numBlocks, threadsPerBlock>>> (static_cast<glm::vec3*>(cudaPtr), 1200, 800, d_cameraData, d_spheres, numOfSphere, d_light);
+    renderKernel << <numBlocks, threadsPerBlock >> > (static_cast<glm::vec3*>(cudaPtr), 1200, 800, d_cameraData, d_spheres, numOfSphere, d_light, d_Ground);
     //printDebugSphereProperties << <1, 1 >> > (d_spheres, numOfSphere);
 
     cudaDeviceSynchronize();

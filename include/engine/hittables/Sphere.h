@@ -2,12 +2,8 @@
 #include <engine/Ray.h>
 #include "cuda_runtime.h"
 #include <iostream>
+#include <engine/hittables/Hitdata.h>
 
-struct HitData {
-    glm::vec3 point;
-    glm::vec3 normal;
-    float t;
-};
 
 class Sphere
 {

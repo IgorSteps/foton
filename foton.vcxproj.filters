@@ -39,6 +39,8 @@
     <ClInclude Include="include\engine\hittables\Sphere.h" />
     <ClInclude Include="include\engine\RayTracedImage.h" />
     <ClInclude Include="include\engine\Light.h" />
+    <ClInclude Include="include\engine\hittables\Ground.h" />
+    <ClInclude Include="include\engine\hittables\Hitdata.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw\glfw3.lib" />

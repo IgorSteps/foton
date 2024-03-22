@@ -98,25 +98,22 @@ void Engine::init()
     _rayTracedImage->Init();
     _interopBuffer = std::make_unique<InteropBuffer>(_rayTracedImage->GetPBOID());
 
+    // Ground
+    Ground ground(glm::vec3(0.0, -1.0f, 0.0), glm::vec3(0.0f, 1.0f, 0.0f));
+
     // Spheres.
-    Sphere mainSphere(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, glm::vec3(1.0f, 0.5f, 0.31f), false);
+    Sphere mainSphere(glm::vec3(0.0f, 0.0f, -1.0f), 1.0f, glm::vec3(1.0f, 0.5f, 0.31f), false);
     _spheres.push_back(mainSphere);
-   /* Sphere mainSphere1(glm::vec3(1.0f, 2.0f, -2.0f), 0.5f, glm::vec3(1.0f, 0.5f, 0.31f), false);
-    _spheres.push_back(mainSphere1);  
-    Sphere mainSphere2(glm::vec3(1.0f, -2.0f, -2.0f), 0.5f, glm::vec3(1.0f, 0.5f, 0.31f), false);
-    _spheres.push_back(mainSphere2); 
-    Sphere mainSphere3(glm::vec3(-1.0f, -2.0f, -3.0f), 0.5f, glm::vec3(1.0f, 0.5f, 0.31f), false);
-    _spheres.push_back(mainSphere3);  
-    Sphere mainSphere4(glm::vec3(2.0f, 2.0f, -2.0f), 0.5f, glm::vec3(1.0f, 0.5f, 0.31f), false);
-    _spheres.push_back(mainSphere4);*/
-    Sphere lightSphere(glm::vec3(1.0f, 1.0f, 0.5f), 0.25f, glm::vec3(1.0f), true);
+
+    Sphere lightSphere(glm::vec3(3.0f, 3.0f, -0.5f), 1.0f, glm::vec3(1.0f), true);
     _spheres.push_back(lightSphere);
 
     // Lights.
-    light = new Light(glm::vec3(1.0f, 1.0f, 0.5f), glm::vec3(1.0f), 1.5);
+    //light = new Light(glm::vec3(0.0f, 3.0f, -1.0f), glm::vec3(1.0f), 1.5);
+    light = new Light(glm::vec3(3.0f, 3.0f, -0.5f), glm::vec3(1.0f), 1.5);
     
     // Make renderer.
-    _renderer = std::make_unique<Renderer>(h_Camera.get(), light, _spheres);
+    _renderer = std::make_unique<Renderer>(ground, h_Camera.get(), light, _spheres);
 }
 
 void Engine::update(float dt)
