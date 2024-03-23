@@ -1,4 +1,6 @@
 #include <engine/graphics/Texture.h>
+
+#include <iostream>
 Texture::Texture(float width, float height) : _width(width), _height(height), _id(0)
 {
 	glGenTextures(1, &_id);
@@ -26,10 +28,11 @@ void Texture::Init()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture::Update()
+void Texture::Update(float width, float height)
 {
 	ActivateAndBind();
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _width, _height, GL_RGB, GL_FLOAT, nullptr);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_FLOAT, nullptr);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_FLOAT, nullptr);
 	Unbind();
 }
 
@@ -40,7 +43,7 @@ void Texture::Bind()
 
 void Texture::ActivateAndBind()
 {
-	glActiveTexture(0x84C0);
+	glActiveTexture(GL_TEXTURE0);
 	Bind();
 }
 

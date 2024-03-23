@@ -40,33 +40,6 @@ glm::vec3 Camera::GetRight() const
     return _right;
 }
 
-void Camera::Update(float dt)
-{
-    Event event;
-
-    while (eventQueue.PollEvent(event))
-    {
-        switch (event.type)
-        {
-        case EventType::MoveForward:
-            ProcessKeyboard(FORWARD, dt);
-            break;
-        case EventType::MoveBackward:
-            ProcessKeyboard(BACKWARD, dt);
-            break;
-        case EventType::MoveLeft:
-            ProcessKeyboard(LEFT, dt);
-            break;
-        case EventType::MoveRight:
-            ProcessKeyboard(RIGHT, dt);
-            break;
-        case EventType::LookAround:
-            ProcessMouseMovement(event.xoffset, event.yoffset);
-            break;
-        }
-    }
-}
-
 void Camera::ProcessKeyboard(CameraMovement direction, float deltaTime)
 {
     float velocity = _speed * deltaTime;

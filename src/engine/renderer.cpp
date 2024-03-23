@@ -9,7 +9,7 @@ Renderer::Renderer(Ground& ground, Camera* camera, Light* light, std::vector<Sph
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to allocate memory for CameraData: %s\n", cudaGetErrorString(error));
     }
-    UpdateCameraData();
+    UpdateCameraData(1200.0f, 800.0f);
 
     error = cudaMalloc(&d_light, sizeof(Light));
     if (error != cudaSuccess) {
@@ -44,15 +44,14 @@ Renderer::~Renderer() {
     cudaFree(d_Ground);
 }
 
-void Renderer::UpdateCameraData() {
+void Renderer::UpdateCameraData(float width, float height) {
     CameraData hostCameraData;
     hostCameraData.position = h_Camera->GetPosition();
     hostCameraData.front = h_Camera->GetFront();
     hostCameraData.up = h_Camera->GetUp();
     hostCameraData.right = h_Camera->GetRight();
     hostCameraData.fov = h_Camera->GetZoom();
-    // TODO: Get width/height from engine
-    hostCameraData.aspectRatio = 1200.0f / 800.0f;
+    hostCameraData.aspectRatio = width / height;
 
     cudaError_t error = cudaMemcpy(d_cameraData, &hostCameraData, sizeof(CameraData), cudaMemcpyHostToDevice);
     if (error != cudaSuccess) {
@@ -73,7 +72,7 @@ void Renderer::UpdateLightData()
     }
 }
 
-void Renderer::Update(std::unique_ptr<InteropBuffer>& interopBuffer)
+void Renderer::Update(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer)
 {
     interopBuffer->MapCudaResource();
 
@@ -82,7 +81,7 @@ void Renderer::Update(std::unique_ptr<InteropBuffer>& interopBuffer)
     int numSpheres = static_cast<int>(h_Spheres.size());
     
     // Update the PBO data via cudaPtr.
-    RenderUsingCUDA(cudaPtr, numSpheres);
+    RenderUsingCUDA(width, height, cudaPtr, numSpheres);
 
     interopBuffer->UnmapCudaResource();
 }

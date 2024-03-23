@@ -17,15 +17,18 @@ public:
 	void update(float dt);
 	void draw();
 	void loadShaders();
+	void processQueue(float dt);
 
 private:
 	std::unique_ptr<Window> _window;
-	std::unique_ptr<Camera> h_Camera;
+	std::unique_ptr<Camera> _camera;
 	std::unique_ptr<Shader> _shader;
 	std::unique_ptr<Renderer> _renderer;
 	std::unique_ptr<RayTracedImage> _rayTracedImage;
 	std::unique_ptr <InteropBuffer> _interopBuffer;
 	std::vector<Sphere> _spheres;
+	PBO* _pbo;
+
 	Light* light;
 
 	// FPS.
@@ -35,3 +38,4 @@ private:
 	float _lastFPS = 0.0f; // Store the last calculated FPS value
 };
 
+extern EventQueue eventQueue;

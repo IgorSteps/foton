@@ -9,7 +9,7 @@ public:
     void Bind();
     void Unbind();
 
-    void Update();
+    void Update(float width, float height);
     void Draw();
 
     GLuint GetID() const;

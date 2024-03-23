@@ -15,8 +15,16 @@ PBO::~PBO()
         glDeleteBuffers(1, &_pbo);
 }
 
-GLuint PBO::GetID() const {
+GLuint PBO::GetID() const 
+{
     return _pbo;
+}
+
+void PBO::Update(float width, float height) 
+{
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _pbo);
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, width * height * sizeof(glm::vec3), nullptr, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 }
 
 void PBO::Bind() 

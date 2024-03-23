@@ -8,7 +8,7 @@ class Ground {
 public:
     glm::vec3 point;  
     glm::vec3 normal;
-    glm::vec3 groundColor = glm::vec3(0.8f, 0.8f, 0.8f);
+    glm::vec3 groundColor = glm::vec3(0.8f);
 
     Ground(const glm::vec3& p, const glm::vec3& n) : point(p), normal(glm::normalize(n)) {}
 

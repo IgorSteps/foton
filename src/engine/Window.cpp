@@ -27,7 +27,6 @@ Window::Window(int width, int height, const std::string& title)
     glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetFramebufferSizeCallback(_window, FramebufferSizeCallback);
     glfwSetCursorPosCallback(_window, MouseCallback);
-    glfwSetScrollCallback(_window, ScrollCallback);
 }
 
 Window::~Window() 
@@ -56,6 +55,9 @@ void Window::SetTitle(const std::string& title)
 void Window::FramebufferSizeCallback(GLFWwindow* window, int width, int height) 
 {
     glViewport(0, 0, width, height);
+
+    Event resizeEvent(EventType::WindowResize, 0.0f, 0.0f, width, height);
+    eventQueue.PostEvent(resizeEvent);
 }
 
 void Window::MouseCallback(GLFWwindow* window, double xposIn, double yposIn)
@@ -71,17 +73,12 @@ void Window::MouseCallback(GLFWwindow* window, double xposIn, double yposIn)
     }
 
     float xoffset = xpos - _lastX;
-    float yoffset = _lastY - ypos; // reversed since y-coordinates go from bottom to top
+    float yoffset = _lastY - ypos; // reversed since y-coordinates go from bottom to top in OpenGL
 
     _lastX = xpos;
     _lastY = ypos;
 
-    eventQueue.PostEvent(Event(EventType::LookAround, xoffset, yoffset));
-}
-
-void Window::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
-{
-    eventQueue.PostEvent(Event(EventType::Zoom, yoffset));
+    eventQueue.PostEvent(Event(EventType::LookAround, xoffset, yoffset, 0, 0));
 }
 
 void Window::ProcessInput(GLFWwindow* window)

@@ -1,9 +1,11 @@
 #include "engine/cuda/InteropBuffer.h"
 #include <stdio.h>
+#include <glm/glm.hpp>
 
-InteropBuffer::InteropBuffer(GLuint bufferID) : _cudaResource(nullptr), _bufferID(bufferID)
+
+InteropBuffer::InteropBuffer(PBO* pbo) : _cudaResource(nullptr), _pbo(pbo)
 {
-	cudaError_t error = cudaGraphicsGLRegisterBuffer(&_cudaResource, _bufferID, cudaGraphicsMapFlagsWriteDiscard);
+	cudaError_t error = cudaGraphicsGLRegisterBuffer(&_cudaResource, _pbo->GetID(), cudaGraphicsMapFlagsWriteDiscard);
 	if (error != cudaSuccess) {
 		fprintf(stderr, "ERROR: CUDA failed to register OpenGL PBO buffer: %s\n", cudaGetErrorString(error));
 	}
@@ -15,6 +17,18 @@ InteropBuffer::~InteropBuffer()
 	if (error != cudaSuccess) {
 		fprintf(stderr, "ERROR: CUDA failed to unregister OpenGL buffer: %s\n", cudaGetErrorString(error));
 	}
+}
+
+void InteropBuffer::Update(float width, float height)
+{
+	// Unregister the PBO from CUDA
+	cudaGraphicsUnregisterResource(_cudaResource);
+
+	// Resize the PBO
+	_pbo->Update(width, height);
+
+	// Re-register the PBO with CUDA
+	cudaGraphicsGLRegisterBuffer(&_cudaResource, _pbo->GetID(), cudaGraphicsMapFlagsWriteDiscard);
 }
 
 void InteropBuffer::MapCudaResource()
