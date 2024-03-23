@@ -108,11 +108,15 @@ void Engine::update(float dt)
     processQueue(dt);
 
     // If resized window:
-    if (SCR_WIDTH != OLD_SCR_WIDTH && SCR_HEIGHT != OLD_SCR_HEIGHT) 
+    // NOTE: this fails when the window is resized on the fly...
+    /*if (SCR_WIDTH != OLD_SCR_WIDTH && SCR_HEIGHT != OLD_SCR_HEIGHT) 
     {
-        // Update InteropBuffer with resized PBO.
+         Update InteropBuffer with resized PBO.
         _interopBuffer->Update(SCR_WIDTH, SCR_HEIGHT);
-    }
+    }*/
+
+    // Update InteropBuffer with resized PBO.
+    _interopBuffer->Update(SCR_WIDTH, SCR_HEIGHT);
 
     // Update PBO data with CUDA.
     _renderer->Update(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
