@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <glm/glm.hpp>
-#include <engine/Camera.h>
+#include <engine/camera/Camera.h>
 #include <engine/cuda/InteropBuffer.h>
 
 #include <engine/cuda/renderData.cuh>
@@ -19,7 +19,7 @@ public:
     void UpdateCameraData(float width, float height);
     void UpdateLightData();
     void Update(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer);
-    void RenderUsingCUDA(float width, float height, void* cudaPtr, int numOfSphere);
+    void ComputeRayColours(float width, float height, void* cudaPtr, int numOfSphere);
 
 private:
     // host entities:

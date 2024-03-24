@@ -1,7 +1,7 @@
 #include <engine/gl/PBOBuffer.h>
 #include <glm/glm.hpp>
 
-PBO::PBO(unsigned int width, unsigned int height)
+PBO::PBO(float width, float height)
     : _width(width), _height(height), _pbo(0) 
 {
     glGenBuffers(1, &_pbo);

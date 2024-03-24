@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 
+// Simplified representation of Camera class to use for calculations on the GPU.
 struct CameraData 
 {
     glm::vec3 position;

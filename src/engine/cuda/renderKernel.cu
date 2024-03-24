@@ -145,16 +145,16 @@ void renderKernel(
     output[j * width + i] = color;
 }
 
-void Renderer::RenderUsingCUDA(float width, float height, void* cudaPtr, int numOfSpheres)
+void Renderer::ComputeRayColours(float width, float height, void* cudaPtr, int numOfSpheres)
 {
     // Launch CUDA kernel
     dim3 threadsPerBlock(16, 16);
     dim3 numBlocks(
-        (width + threadsPerBlock.x - 1) / threadsPerBlock.x,
-        (height + threadsPerBlock.y - 1) / threadsPerBlock.y
+        (unsigned int(width) + threadsPerBlock.x - 1) / threadsPerBlock.x,
+        (unsigned int(height) + threadsPerBlock.y - 1) / threadsPerBlock.y
     );
 
-    renderKernel <<<numBlocks, threadsPerBlock>>> (static_cast<glm::vec3*>(cudaPtr), width, height, d_cameraData, d_spheres, numOfSpheres,  d_light,  d_Ground);
+    renderKernel <<<numBlocks, threadsPerBlock>>> (static_cast<glm::vec3*>(cudaPtr), int(width), int(height), d_cameraData, d_spheres, numOfSpheres, d_light, d_Ground);
 
     cudaDeviceSynchronize();
 

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <engine/gl/Shader.h>
-#include <engine/Window.h>
+#include <engine/window/Window.h>
 #include <engine/renderer.h>
 #include <engine/RayTracedImage.h>
 #include <engine/cuda/InteropBuffer.h>
@@ -12,6 +12,7 @@
 class Engine {
 public:
 	Engine();
+	~Engine();
 	void run();
 	void init();
 	void update(float dt);
@@ -28,8 +29,7 @@ private:
 	std::unique_ptr <InteropBuffer> _interopBuffer;
 	std::vector<Sphere> _spheres;
 	PBO* _pbo;
-
-	Light* light;
+	Light* _light;
 
 	// FPS.
 	int _frameCount = 0;

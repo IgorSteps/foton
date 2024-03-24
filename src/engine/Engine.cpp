@@ -10,14 +10,19 @@ using std::chrono::duration_cast;
 using std::chrono::duration;
 using std::chrono::seconds;
 
-float OLD_SCR_WIDTH = 1200.0f;
-float OLD_SCR_HEIGHT = 800.0f;
+// Initilise with defaults.
 float SCR_WIDTH = 1200.0f;
 float SCR_HEIGHT = 800.0f;
 
 Engine::Engine()
 {
     init();
+}
+
+Engine::~Engine() 
+{
+    delete _light;
+    delete _pbo;
 }
 
 void Engine::run()
@@ -28,11 +33,11 @@ void Engine::run()
     {
         while (!_window->IsClosed())
         {
+            // Calcualte delta time.
             auto currentTime = Clock::now();
             float dt = duration_cast<duration<float>>(currentTime - lastTime).count();
             lastTime = currentTime;
 
-            // @TODO: Move elsewhere.
             // FPS:
             _timeSinceLastFPSUpdate += dt;
             ++_frameCount;
@@ -63,7 +68,7 @@ void Engine::run()
 void Engine::init()
 {    
     // Make window and initilise OpenGL context.
-    _window = std::make_unique<Window>(SCR_WIDTH, SCR_HEIGHT, "Foton");
+    _window = std::make_unique<Window>(int(SCR_WIDTH), int(SCR_HEIGHT), "Foton");
 
     // Shaders:
     loadShaders();
@@ -96,35 +101,21 @@ void Engine::init()
     _spheres.push_back(lightSphere);
 
     // Light:
-    light = new Light(glm::vec3(3.0f, 3.0f, -0.5f), glm::vec3(1.0f), 1.5);
+    _light = new Light(glm::vec3(3.0f, 3.0f, -0.5f), glm::vec3(1.0f), 1.5);
     
     // Create Render system:
-    _renderer = std::make_unique<Renderer>(ground, _camera.get(), light, _spheres);
-
+    _renderer = std::make_unique<Renderer>(ground, _camera.get(), _light, _spheres);
 }
 
 void Engine::update(float dt)
 {
+    // Process events.
     processQueue(dt);
 
-    // If resized window:
-    // NOTE: this fails when the window is resized on the fly...
-    /*if (SCR_WIDTH != OLD_SCR_WIDTH && SCR_HEIGHT != OLD_SCR_HEIGHT) 
-    {
-         Update InteropBuffer with resized PBO.
-        _interopBuffer->Update(SCR_WIDTH, SCR_HEIGHT);
-    }*/
-
-    // Update InteropBuffer with resized PBO.
-    _interopBuffer->Update(SCR_WIDTH, SCR_HEIGHT);
-
-    // Update PBO data with CUDA.
+    // Update PBO data with CUDA calculations.
     _renderer->Update(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
 
-    // Update Camera data on GPU.
-    _renderer->UpdateCameraData(SCR_WIDTH, SCR_HEIGHT);
-
-    // Update ray traced image: texture.
+    // Update OpenGL's texture with new PBO data.
     _rayTracedImage->Update(SCR_WIDTH, SCR_HEIGHT);
 }
 
@@ -147,7 +138,7 @@ void Engine::loadShaders()
     _shader->Load(vertexShaderSource, fragmentShaderSource);
 }
 
-void  Engine::processQueue(float dt)
+void Engine::processQueue(float dt)
 {
     Event event;
 
@@ -156,12 +147,12 @@ void  Engine::processQueue(float dt)
         switch (event.type)
         {
         case EventType::WindowResize:
-            // Setup old screen dimensions.
-            OLD_SCR_WIDTH = SCR_WIDTH;
-            OLD_SCR_HEIGHT = SCR_HEIGHT;
+            // Update screen dimensions.
+            SCR_WIDTH = float(event.width);
+            SCR_HEIGHT = float(event.height);
 
-            SCR_WIDTH = event.width;
-            SCR_HEIGHT = event.height;
+            // Update InteropBuffer with resized PBO.
+            _interopBuffer->Update(SCR_WIDTH, SCR_HEIGHT);
             break;
         case EventType::MoveForward:
             _camera->ProcessKeyboard(FORWARD, dt);

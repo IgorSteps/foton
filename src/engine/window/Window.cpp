@@ -1,5 +1,5 @@
 #include <glad/glad.h>
-#include "engine/Window.h"
+#include "engine/window/Window.h"
 #include "engine/gl/GL.h"
 #include <stdexcept>
 #include <engine/message/Event.h>
@@ -19,7 +19,8 @@ Window::Window(int width, int height, const std::string& title)
     GL::InitiliseGLFW();
 
     _window = glfwCreateWindow(_width, _height, _title.c_str(), nullptr, nullptr);
-    if (!_window) {
+    if (!_window) 
+    {
         throw std::runtime_error("Failed to create GLFW window");
     }
 
@@ -56,8 +57,7 @@ void Window::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 
-    Event resizeEvent(EventType::WindowResize, 0.0f, 0.0f, width, height);
-    eventQueue.PostEvent(resizeEvent);
+    eventQueue.PostEvent(Event(EventType::WindowResize, 0.0f, 0.0f, width, height));
 }
 
 void Window::MouseCallback(GLFWwindow* window, double xposIn, double yposIn)
@@ -73,7 +73,7 @@ void Window::MouseCallback(GLFWwindow* window, double xposIn, double yposIn)
     }
 
     float xoffset = xpos - _lastX;
-    float yoffset = _lastY - ypos; // reversed since y-coordinates go from bottom to top in OpenGL
+    float yoffset = _lastY - ypos; // reversed since y-coordinates go from bottom to top in OpenGL.
 
     _lastX = xpos;
     _lastY = ypos;

@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <GLFW/glfw3.h>
-#include <engine/Camera.h>
 #include <memory>
 #include <engine/message/EventQueue.h>
 
@@ -16,6 +15,7 @@ public:
     static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
     static void MouseCallback(GLFWwindow* window, double xpos, double ypos);
     static void ProcessInput(GLFWwindow* window);
+
 private:
     GLFWwindow* _window;
     int _width, _height;

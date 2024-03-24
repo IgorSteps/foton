@@ -30,10 +30,10 @@ public:
         }
          
         // Find the nearest root that lies in the acceptable range.
-        float root = (-b - sqrt(discriminant)) / (2.0 * a);
+        float root = (-b - sqrt(discriminant)) / (2.0f * a);
         if (root <= tMin || tMax <= root)
         {
-            root = (-b + sqrt(discriminant)) / (2.0 * a);
+            root = (-b + sqrt(discriminant)) / (2.0f * a);
             if (root <= tMin || tMax <= root)
             {
                 return false;

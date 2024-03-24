@@ -37,14 +37,16 @@ Renderer::Renderer(Ground& ground, Camera* camera, Light* light, std::vector<Sph
     }
 }
 
-Renderer::~Renderer() {
+Renderer::~Renderer() 
+{
     cudaFree(d_cameraData);
     cudaFree(d_spheres);
     cudaFree(d_light);
     cudaFree(d_Ground);
 }
 
-void Renderer::UpdateCameraData(float width, float height) {
+void Renderer::UpdateCameraData(float width, float height) 
+{
     CameraData hostCameraData;
     hostCameraData.position = h_Camera->GetPosition();
     hostCameraData.front = h_Camera->GetFront();
@@ -54,7 +56,8 @@ void Renderer::UpdateCameraData(float width, float height) {
     hostCameraData.aspectRatio = width / height;
 
     cudaError_t error = cudaMemcpy(d_cameraData, &hostCameraData, sizeof(CameraData), cudaMemcpyHostToDevice);
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess) 
+    {
         fprintf(stderr, "Failed to copy new CameraData: %s\n", cudaGetErrorString(error));
     }
 }
@@ -67,21 +70,26 @@ void Renderer::UpdateLightData()
     newLightData.intensity = h_Light->intensity;
 
     cudaError_t error = cudaMemcpy(d_light, &newLightData, sizeof(Light), cudaMemcpyHostToDevice);
-    if (error != cudaSuccess) {
+    if (error != cudaSuccess) 
+    {
         fprintf(stderr, "Failed to copy Lights: %s\n", cudaGetErrorString(error));
     }
 }
 
 void Renderer::Update(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer)
 {
-    interopBuffer->MapCudaResource();
-
-    size_t size;
-    void* cudaPtr = interopBuffer->GetCudaMappedPtr(&size);
+    // Update GPU camera data with new host camera data.
+    UpdateCameraData(width, height);
     int numSpheres = static_cast<int>(h_Spheres.size());
     
-    // Update the PBO data via cudaPtr.
-    RenderUsingCUDA(width, height, cudaPtr, numSpheres);
+    interopBuffer->MapCudaResource();
+
+    // In case we need to know the size of the cudaPtr.
+    size_t size;
+    void* cudaPtr = interopBuffer->GetCudaMappedPtr(&size);
+    
+    // Update the PBO data with new ray colours via cudaPtr.
+    ComputeRayColours(width, height, cudaPtr, numSpheres);
 
     interopBuffer->UnmapCudaResource();
 }
