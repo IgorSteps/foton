@@ -28,12 +28,12 @@ public:
         {  
             return false;
         }
-         
-        // Find the nearest root that lies in the acceptable range.
-        float root = (-b - sqrt(discriminant)) / (2.0 * a);
+        
+        float sqrted = sqrt(discriminant);
+        float root = (-b - sqrted) / (2.0 * a);
         if (root <= tMin || tMax <= root)
         {
-            root = (-b + sqrt(discriminant)) / (2.0 * a);
+            root = (-b + sqrted) / (2.0 * a);
             if (root <= tMin || tMax <= root)
             {
                 return false;
@@ -43,7 +43,7 @@ public:
         // Set hit data.
         hit.t = root;
         hit.point = r.At(hit.t);
-        hit.normal = (hit.point - _center) ;
+        hit.normal = glm::normalize((hit.point - _center)/_radius) ;
 
         return true;
     }
