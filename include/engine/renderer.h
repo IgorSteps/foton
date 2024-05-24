@@ -7,7 +7,6 @@
 #include <engine/cuda/renderData.cuh>
 #include "engine/hittables/Sphere.h"
 #include "engine/Light.h"
-#include "engine/hittables/Ground.h"
 #include <memory>
 
 class Renderer 
