@@ -42,7 +42,6 @@
     <ClInclude Include="include\engine\Camera.h" />
     <ClInclude Include="include\engine\gl\GL.h" />
     <ClInclude Include="include\engine\graphics\Sprite.h" />
-    <ClInclude Include="include\engine\hittables\Ground.h" />
     <ClInclude Include="include\engine\hittables\Hitdata.h" />
     <ClInclude Include="include\engine\hittables\Sphere.h" />
     <ClInclude Include="include\engine\io\File.h" />
