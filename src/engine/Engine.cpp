@@ -85,10 +85,10 @@ void Engine::init()
     // Camera:
     _camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 
-    // Ground:
-    Ground ground(glm::vec3(0.0, -1.0f, 0.0), glm::vec3(0.0f, 1.0f, 0.0f));
-
     // Spheres:
+    Sphere groundSphere(glm::vec3(0.0f, -501.0f, -1.0f), 500.0f, glm::vec3(0.96f, 0.96f, 0.86f), false);
+    _spheres.push_back(groundSphere);
+    
     Sphere mainSphere(glm::vec3(0.0f, 0.0f, -1.0f), 1.0f, glm::vec3(1.0f, 0.5f, 0.31f), false);
     _spheres.push_back(mainSphere);
 
@@ -99,7 +99,7 @@ void Engine::init()
     light = new Light(glm::vec3(3.0f, 3.0f, -0.5f), glm::vec3(1.0f), 1.5);
     
     // Create Render system:
-    _renderer = std::make_unique<Renderer>(ground, _camera.get(), light, _spheres);
+    _renderer = std::make_unique<Renderer>(_camera.get(), light, _spheres);
 
 }
 

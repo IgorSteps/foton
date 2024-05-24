@@ -43,7 +43,7 @@ public:
         // Set hit data.
         hit.t = root;
         hit.point = r.At(hit.t);
-        hit.normal = (hit.point - _center) ;
+        hit.normal = (hit.point - _center)/_radius ;
 
         return true;
     }

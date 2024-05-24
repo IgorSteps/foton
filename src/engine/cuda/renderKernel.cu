@@ -87,8 +87,7 @@ void renderKernel(
     CameraData* camData,
     Sphere* d_spheres,
     int numOfSpheres,
-    Light* d_light,
-    Ground* d_ground
+    Light* d_light
 )
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -119,7 +118,7 @@ void renderKernel(
 
             if (!d_spheres[x].IsLight())
             {
-                color += ComputePhongIllumination(d_light, hitData, d_spheres, numOfSpheres, d_spheres[x].GetColour());
+                color = ComputePhongIllumination(d_light, hitData, d_spheres, numOfSpheres, d_spheres[x].GetColour());
             }
             else
             {
@@ -128,13 +127,7 @@ void renderKernel(
         }
     }
 
-    if (!hitSomething && d_ground->Hit(ray, closestSoFar, hitData))
-    {
-        closestSoFar = hitData.t;
-        hitSomething = true;
-        color = ComputePhongIllumination(d_light, hitData, d_spheres, numOfSpheres, d_ground->groundColor);
-    }
-
+  
     if (!hitSomething)
     {
         glm::vec3 unitDirection = glm::normalize(ray.direction);
@@ -154,7 +147,7 @@ void Renderer::RenderUsingCUDA(float width, float height, void* cudaPtr, int num
         (height + threadsPerBlock.y - 1) / threadsPerBlock.y
     );
 
-    renderKernel <<<numBlocks, threadsPerBlock>>> (static_cast<glm::vec3*>(cudaPtr), width, height, d_cameraData, d_spheres, numOfSpheres,  d_light,  d_Ground);
+    renderKernel <<<numBlocks, threadsPerBlock>>> (static_cast<glm::vec3*>(cudaPtr), width, height, d_cameraData, d_spheres, numOfSpheres,  d_light);
 
     cudaDeviceSynchronize();
 

@@ -1,8 +1,8 @@
 ﻿#include <engine/Renderer.h>
 #include "cuda_runtime.h"
 
-Renderer::Renderer(Ground& ground, Camera* camera, Light* light, std::vector<Sphere>& spheres)
-    : h_Camera(camera), h_Light(light), h_Spheres(spheres), h_Ground(ground)
+Renderer::Renderer(Camera* camera, Light* light, std::vector<Sphere>& spheres)
+    : h_Camera(camera), h_Light(light), h_Spheres(spheres)
 {
     // Allocate memory on the device:
     cudaError_t error = cudaMalloc(&d_cameraData, sizeof(CameraData));
@@ -25,23 +25,13 @@ Renderer::Renderer(Ground& ground, Camera* camera, Light* light, std::vector<Sph
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to copy Spheres: %s\n", cudaGetErrorString(error));
     }
-
-
-    error = cudaMalloc(&d_Ground, sizeof(Ground));
-    if (error != cudaSuccess) {
-        fprintf(stderr, "Failed to allocate memory for Spheres: %s\n", cudaGetErrorString(error));
-    }
-    error = cudaMemcpy(d_Ground, &h_Ground, sizeof(Ground), cudaMemcpyHostToDevice);
-    if (error != cudaSuccess) {
-        fprintf(stderr, "Failed to copy Spheres: %s\n", cudaGetErrorString(error));
-    }
 }
 
 Renderer::~Renderer() {
     cudaFree(d_cameraData);
     cudaFree(d_spheres);
     cudaFree(d_light);
-    cudaFree(d_Ground);
+
 }
 
 void Renderer::UpdateCameraData(float width, float height) {
