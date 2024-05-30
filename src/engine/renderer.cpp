@@ -31,7 +31,6 @@ Renderer::~Renderer() {
     cudaFree(d_cameraData);
     cudaFree(d_spheres);
     cudaFree(d_light);
-
 }
 
 void Renderer::UpdateCameraData(float width, float height) {

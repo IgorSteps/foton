@@ -124,10 +124,11 @@ void renderKernel(
             {
                 color = d_spheres[x].GetColour();
             }
+
+
         }
     }
 
-  
     if (!hitSomething)
     {
         glm::vec3 unitDirection = glm::normalize(ray.direction);
