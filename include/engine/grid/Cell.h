@@ -3,11 +3,24 @@
 
 class Cell {
 public:
-    void Add(int sphereID) 
+    void Add(int sphereIdx) 
     {
-        _sphereIds.push_back(sphereID);
+        _sphereIdxs.push_back(sphereIdx);
     }
 
+    __device__ bool Intersect(const Sphere* spheres, const Ray& ray, float tMin, float tMax, HitData& hit) const
+    {
+        bool hitAnything = false;
+        for (int sphereIndex : _sphereIdxs) 
+        {
+            if (spheres[sphereIndex].Hit(ray, tMin, tMax, hit)) 
+            {
+                tMax = hit.t;
+                hitAnything = true;
+            }
+        }
+        return hitAnything;
+    }
 private:
-    std::vector<int> _sphereIds;
+    std::vector<int> _sphereIdxs;
 };
