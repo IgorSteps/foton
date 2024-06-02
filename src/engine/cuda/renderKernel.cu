@@ -2,21 +2,6 @@
 #include "device_launch_parameters.h"
 #include <engine/Renderer.h>
 
-
-
-__device__ Ray GetRay(const CameraData* cam, float u, float v) {
-    float tanFovHalf = tanf(glm::radians(cam->fov / 2.0f));
-
-    float ndcX = (2.0f * u) - 1.0f;
-    float ndcY = 1.0f - (2.0f * v);
-
-    float camX = ndcX * cam->aspectRatio * tanFovHalf;
-    float camY = ndcY * tanFovHalf;
-
-    glm::vec3 rayDirection = glm::normalize(cam->front + camX * cam->right - camY * cam->up);
-    return Ray{ cam->position, rayDirection };
-}
-
 __device__ bool isInShadow(const Ray& ray, const Sphere* d_spheres, const int numOfSpheres, float lightDist)
 {
     HitData tempHit;
@@ -49,10 +34,10 @@ __device__ glm::vec3 ComputePhongIllumination(
     glm::vec3 lightDir = glm::normalize(light->position - hit.point);
 
     // Setup shadow ray.
-    Ray shadowRay;
+    Ray shadowRay(hit.point, lightDir);
 
-    shadowRay.origin = hit.point;
-    shadowRay.direction = lightDir;
+    /*shadowRay.origin = hit.point;
+    shadowRay.direction = lightDir;*/
     float distanceToLight = glm::length(light->position - hit.point);
 
     // Check if the point is in shadow
@@ -99,7 +84,7 @@ void renderKernel(
     float u = float(i) / (width - 1);
     float v = float(j) / (height - 1);
 
-    Ray ray = GetRay(camData, u, v);
+    Ray ray = Ray(camData, u, v);
     HitData hitData;
 
     // Keeps track of the closest hit.
@@ -148,7 +133,7 @@ void Renderer::RenderUsingCUDA(float width, float height, void* cudaPtr, int num
         (height + threadsPerBlock.y - 1) / threadsPerBlock.y
     );
 
-    renderKernel <<<numBlocks, threadsPerBlock>>> (static_cast<glm::vec3*>(cudaPtr), width, height, d_cameraData, d_spheres, numOfSpheres,  d_light);
+    renderKernel <<<numBlocks, threadsPerBlock>>> (static_cast<glm::vec3*>(cudaPtr), width, height, d_Camera, d_spheres, numOfSpheres,  d_light);
 
     cudaDeviceSynchronize();
 
