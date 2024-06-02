@@ -37,106 +37,74 @@ __host__ Grid::~Grid()
 __device__ bool Grid::Intersect(const Ray& ray, float tMin, float tMax, HitData& hit)
 {
     glm::vec3 rayGridOrigin = ray.origin - _gridMin;
-    glm::vec3 originCell = rayGridOrigin / _cellSize;
+    glm::ivec3 floredVal = glm::floor(rayGridOrigin / _cellSize);
+    glm::ivec3 originCell = glm::clamp(floredVal, glm::ivec3(0.0f), glm::ivec3(_gridResolution - 1.0f));
     glm::vec3 normalisedRayDir = glm::normalize(ray.direction);
-    glm::vec3 deltaT = glm::vec3(0), t = glm::vec3(0);
+    glm::vec3 deltaT, t;
+    glm::ivec3 step;
 
     // AABB (Axis-Aligned Bounding Box) intersection test
-    //float t0 = tMin, t1 = tMax;
-    //for (int i = 0; i < 3; ++i)
-    //{
-    //    float invDir = 1.0f / normalisedRayDir[i];
-    //    float tNear = (_gridMin[i] - ray.origin[i]) * invDir;
-    //    float tFar = (_gridMax[i] - ray.origin[i]) * invDir;
-
-    //    if (tNear > tFar)
-    //    {
-    //        // Swap
-    //        float temp = tNear;
-    //        tNear = tFar;
-    //        tFar = temp;
-    //    }
-
-    //    t0 = tNear > t0 ? tNear : t0;
-    //    t1 = tFar < t1 ? tFar : t1;
-
-    //    if (t0 > t1) 
-    //    {
-    //        return false; 
-    //    }
-    //}
-    for (int i = 0; i < 3; ++i)
-    {
-        if (normalisedRayDir[i] > 0) // Positive direction.
-        {
-            t[i] = ((floor(originCell[i]) + 1) * _cellSize[i] - rayGridOrigin[i]) / normalisedRayDir[i];
+    float t0 = tMin, t1 = tMax;
+    for (int i = 0; i < 3; ++i) {
+        float invDir = 1.0f / normalisedRayDir[i];
+        float tNear = (_gridMin[i] - ray.origin[i]) * invDir;
+        float tFar = (_gridMax[i] - ray.origin[i]) * invDir;
+        if (tNear > tFar) {
+            float temp = tNear;
+            tNear = tFar;
+            tFar = temp;
         }
-        else // Negative direction.
-        {
-            t[i] = ((ceil(originCell[i]) - 1) * _cellSize[i] - rayGridOrigin[i]) / normalisedRayDir[i];
+        t0 = tNear > t0 ? tNear : t0;
+        t1 = tFar < t1 ? tFar : t1;
+        if (t0 > t1) {
+            return false;
         }
-        deltaT[i] = _cellSize[i] / std::abs(normalisedRayDir[i]);
     }
 
-    float currentT = 0.0f;
-    while (1)
-    {
-        //printf("Called");
-        // Check if the ray intersects any spheres in the current cell
-        //int cellIdx = GetCellIndex(static_cast<int>(originCell.x), static_cast<int>(originCell.y), static_cast<int>(originCell.z));
-        //printf("Cell index: %d" + cellIdx + '\n');
-        if (_d_Cells[0].Intersect(thrust::raw_pointer_cast(_d_Spheres.data()), _d_Cells[0]._h_NumSpheres, ray, tMin, tMax, hit))
-        {
+    // Compute initial t and deltaT for each axis
+    for (int i = 0; i < 3; ++i) {
+        if (normalisedRayDir[i] > 0) {
+            t[i] = ((originCell[i] + 1) * _cellSize[i] - rayGridOrigin[i]) / normalisedRayDir[i];
+            deltaT[i] = _cellSize[i] / std::abs(normalisedRayDir[i]);
+            step[i] = 1;
+        }
+        else {
+            t[i] = (originCell[i] * _cellSize[i] - rayGridOrigin[i]) / normalisedRayDir[i];
+            deltaT[i] = -_cellSize[i] / std::abs(normalisedRayDir[i]);
+            step[i] = -1;
+        }
+    }
+
+    float currentT = t0;
+    while (currentT <= t1) {
+        // Calculate cell index correctly
+        int cellIdx = GetCellIndex(originCell.x, originCell.y, originCell.z);
+        if (_d_Cells[cellIdx].Intersect(thrust::raw_pointer_cast(_d_Spheres.data()), _d_Cells[cellIdx]._h_NumSpheres, ray, tMin, tMax, hit)) {
             tMax = hit.t;
             return true;
         }
-        
 
         // Determine the next cell to step to:
-        if (t.x < t.y)
-        {
+        if (t.x < t.y && t.x < t.z) {
             currentT = t.x;
             t.x += deltaT.x;
-            if (normalisedRayDir.x > 0) // Positive direction.
-            {
-                originCell.x += 1;
-            }
-            else // Negatve direction.
-            {
-                originCell.x -= 1;
-            }
+            originCell.x += step.x;
         }
-        else if (t.y < t.z)
-        {
+        else if (t.y < t.z) {
             currentT = t.y;
             t.y += deltaT.y;
-            if (normalisedRayDir.y > 0) // Positive direction.
-            {
-                originCell.y += 1;
-            }
-            else // Negatve direction.
-            {
-                originCell.y -= 1;
-            }
+            originCell.y += step.y;
         }
-        else
-        {
+        else {
             currentT = t.z;
             t.z += deltaT.z;
-            if (normalisedRayDir.z > 0) // Positive direction.
-            {
-                originCell.z += 1;
-            }
-            else // Negatve direction.
-            {
-                originCell.z -= 1;
-            }
+            originCell.z += step.z;
         }
 
-        if (originCell.x < 0 || originCell.x > _gridMax.x - 1.0f ||
-            originCell.y < 0 || originCell.y > _gridMax.y - 1.0f ||
-            originCell.z < 0 || originCell.z > _gridMax.z - 1.0f)
-        {
+        // Check if we are out of bounds
+        if (originCell.x < 0 || originCell.x >= _gridResolution.x ||
+            originCell.y < 0 || originCell.y >= _gridResolution.y ||
+            originCell.z < 0 || originCell.z >= _gridResolution.z) {
             break;
         }
     }
@@ -175,8 +143,11 @@ __host__ void Grid::Populate()
         glm::vec3 sphereBBoxMin = sphere.GetCenter() - sphere.GetRadius();
         glm::vec3 sphereBBoxMax = sphere.GetCenter() + sphere.GetRadius();
 
-        glm::vec3 minCell = glm::floor(sphereBBoxMin / _cellSize);
-        glm::vec3 maxCell = glm::ceil(sphereBBoxMax / _cellSize);
+        glm::ivec3 minCell = glm::floor(sphereBBoxMin / _cellSize);
+        glm::ivec3 maxCell = glm::ceil(sphereBBoxMax / _cellSize);
+
+        minCell = glm::clamp(minCell, glm::ivec3(0), glm::ivec3(_gridResolution - 1.0f));
+        maxCell = glm::clamp(maxCell, glm::ivec3(0), glm::ivec3(_gridResolution - 1.0f));
 
         for (int z = minCell.z; z <= maxCell.z; ++z)
         {
@@ -184,14 +155,11 @@ __host__ void Grid::Populate()
             {
                 for (int x = minCell.x; x <= maxCell.x; ++x)
                 {
-                    if (x >= 0 && x < _gridResolution.x &&
-                        y >= 0 && y < _gridResolution.y &&
-                        z >= 0 && z < _gridResolution.z)
-                    {
-                        int cellIdx =GetCellIndex(x,y,z);
-                        std::cout << "Adding sphereIdx: " << i << " to Cell at index: " << cellIdx << std::endl;
-                        _h_Cells[cellIdx].Add(i);
-                    }
+                   
+                    int cellIdx = z * _gridResolution.x * _gridResolution.y + y * _gridResolution.x + x; ;
+                    std::cout << "Adding sphereIdx: " << i << " to Cell at index: " << cellIdx << std::endl;
+                    _h_Cells[cellIdx].Add(i);
+                    
                 }
             }
         }
