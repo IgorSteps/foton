@@ -18,7 +18,7 @@ public:
 	void draw();
 	void loadShaders();
 	void processQueue(float dt);
-	void Populate();
+	void Populate(int numRows, int spheresPerRow, int sphereDist, int rowDist);
 private:
 	std::unique_ptr<Window> _window;
 	std::unique_ptr<Camera> _camera;

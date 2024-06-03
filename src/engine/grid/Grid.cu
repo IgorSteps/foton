@@ -121,8 +121,8 @@ __host__ void Grid::ComputeGridSize()
 __host__ void Grid::ComputeGridResolution()
 {
     float volume = _gridSize.x * _gridSize.y * _gridSize.z;
-    float cubeRoot = std::pow(_totalNumSpheres / volume, 1.0f / 3.0f);
-
+    float cubeRoot = std::powf(_balancingFactor * _totalNumSpheres / volume, 1.0f / 3.0f);
+  
     _gridResolution = glm::max(glm::floor(_gridSize * cubeRoot), glm::vec3(1)); // Make sure it is atleast 1.
     _cellSize = _gridSize / _gridResolution;
 
@@ -158,7 +158,7 @@ __host__ void Grid::Populate()
                 for (int x = minCell.x; x <= maxCell.x; ++x)
                 {
                     int cellIdx = GetCellIndex(x,y,z);
-                    std::cout << "Adding Sphere index '" << sphereIdx << "' to Cell '" << cellIdx << std::endl;
+                    printf("Adding Sphere index '%d' to Cell at index '%d'\n", sphereIdx, cellIdx);
                     _h_Cells[cellIdx].Add(sphereIdx);
                 }
             }

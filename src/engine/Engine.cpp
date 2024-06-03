@@ -92,7 +92,7 @@ void Engine::init()
     Sphere lightSphere(glm::vec3(3.0f, 3.0f, -0.5f), 0.3f, glm::vec3(1.0f), true);
     _spheres.push_back(lightSphere);*/
     
-    Populate();
+    Populate(5, 5, 3, 4);
 
     // Light:
     _light = new Light(glm::vec3(3.0f, 3.0f, -0.5f), glm::vec3(1.0f), 1.5);
@@ -176,33 +176,17 @@ void  Engine::processQueue(float dt)
     }
 }
 
-void Engine::Populate()
+void Engine::Populate(int numRows, int spheresPerRow, int sphereDist, int rowDist)
 {
-    Sphere mainSphere(glm::vec3(0.0f, 0.0f, -1.0f), 1.0f, glm::vec3(1.0f, 0.5f, 0.31f), false);
-    _spheres.push_back(mainSphere);
-
-    Sphere sphere1(glm::vec3(2.0f, 0.0f, -3.0f), 1.0f, glm::vec3(0.7f, 0.3f, 0.2f), false);
-    _spheres.push_back(sphere1);
-
-    /*Sphere sphere2(glm::vec3(-2.0f, 0.0f, -3.0f), 1.0f, glm::vec3(0.8f, 0.6f, 0.2f), false);
-    _spheres.push_back(sphere2);
-
-    Sphere sphere3(glm::vec3(0.0f, 2.0f, -3.0f), 1.0f, glm::vec3(0.2f, 0.8f, 0.5f), false);
-    _spheres.push_back(sphere3);
-
-    Sphere sphere4(glm::vec3(0.0f, -2.0f, -3.0f), 1.0f, glm::vec3(0.3f, 0.2f, 0.8f), false);
-    _spheres.push_back(sphere4);
-
-    Sphere sphere5(glm::vec3(1.0f, 1.0f, -4.0f), 1.0f, glm::vec3(0.1f, 0.9f, 0.2f), false);
-    _spheres.push_back(sphere5);
-
-    Sphere sphere6(glm::vec3(-1.0f, -1.0f, -4.0f), 1.0f, glm::vec3(0.9f, 0.1f, 0.1f), false);
-    _spheres.push_back(sphere6);
-
-    Sphere sphere7(glm::vec3(1.0f, -1.0f, -2.0f), 1.0f, glm::vec3(0.1f, 0.1f, 0.9f), false);
-    _spheres.push_back(sphere7);
-
-    Sphere sphere8(glm::vec3(-1.0f, 1.0f, -2.0f), 1.0f, glm::vec3(0.9f, 0.9f, 0.1f), false);
-    _spheres.push_back(sphere8);*/
-
+    for (int row = 0; row < numRows; ++row)
+    {
+        for (int i = 0; i < spheresPerRow; ++i)
+        {
+            float x = (i - spheresPerRow / 2) * sphereDist;
+            float z = -1.0f - row * rowDist;
+            glm::vec3 position(x, 0.0f, z);
+            glm::vec3 colour(0.5f + 0.5f * (i % 2), 0.5f * (row % 2), 0.5f + 0.5f * ((i + row) % 2));
+            _spheres.push_back(Sphere(position, 1.0f, colour, false));
+        }
+    }
 }
