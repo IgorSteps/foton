@@ -22,18 +22,14 @@ private:
     // 1D array that stores 3D coords in the following format:
     // First all x coords, then all y coords and lastly all z coords.
     thrust::host_vector<Cell> _h_Cells;
-    //thrust::device_vector<Cell> _d_Cells;
     thrust::host_vector<Sphere> _h_Spheres;
     thrust::device_vector<Sphere> _d_Spheres;
     Cell* _d_Cells;
     int _numSpheres;
 
-    __host__ void ComputeSceneBoundingBox();
-
+    __host__ void ComputeGridSize();
     __host__ void ComputeGridResolution();
-
     __host__ void Populate();
-
     __host__ void CopyCellsToDevice(); 
     __host__ glm::vec3 GetCellCoords(const glm::vec3& worldPos) const;
     __device__ __host__ int GetCellIndex(int x, int y, int z) const;

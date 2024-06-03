@@ -5,25 +5,14 @@ __host__ Grid::Grid(std::vector<Sphere>& spheres)
     _numSpheres = spheres.size();
     _h_Spheres = spheres;
     _d_Spheres = _h_Spheres;
-    ComputeSceneBoundingBox();
+    ComputeGridSize();
     ComputeGridResolution();
-    // Populate cells:
-    _cellSize = _gridSize / _gridResolution;
-    int totalCells = _gridResolution.x * _gridResolution.y * _gridResolution.z;
-    _h_Cells.resize(totalCells);
-    
-
     Populate();
-    // Copy to the GPU:
     CopyCellsToDevice();
-    std::cout << "Finish setting up Grid" << std::endl;
+    std::cout << "Finished setting up Grid" << std::endl;
 }
 
-__host__ Grid::~Grid() 
-{
-
-}
-
+// Intersect traverses the grid using 3D-DDA algorithm.
 __device__ bool Grid::Intersect(const Ray& ray, float tMin, float tMax, HitData& hit)
 {
     glm::vec3 normalisedRayDir = glm::normalize(ray.direction);
@@ -76,7 +65,8 @@ __device__ bool Grid::Intersect(const Ray& ray, float tMin, float tMax, HitData&
         if (_d_Cells[cellIdx].Intersect(
             thrust::raw_pointer_cast(_d_Spheres.data()),
             _d_Cells[cellIdx].GetNumSpheres(),
-            ray, tMin, tMax, hit)) 
+            ray, tMin, tMax, hit)
+        ) 
         {
             return true;
         }
@@ -109,7 +99,8 @@ __device__ bool Grid::Intersect(const Ray& ray, float tMin, float tMax, HitData&
     return false;
 }
 
-__host__ void Grid::ComputeSceneBoundingBox()
+// ComputeGridSize calcualtes the sum of bboxes of all spheres which is the grid size.
+__host__ void Grid::ComputeGridSize()
 {
     _gridMin = _h_Spheres[0].GetCenter() - _h_Spheres[0].GetRadius();
     _gridMax = _h_Spheres[0].GetCenter() + _h_Spheres[0].GetRadius();
@@ -123,6 +114,7 @@ __host__ void Grid::ComputeSceneBoundingBox()
     _gridSize = _gridMax - _gridMin;
 }
 
+// ComputeGridResolution using fancy maths.
 __host__ void Grid::ComputeGridResolution()
 {
     int numOfSpheres = _h_Spheres.size();
@@ -132,45 +124,49 @@ __host__ void Grid::ComputeGridResolution()
     _gridResolution = glm::vec3(_gridSize * cubeRoot);
 }
 
+// Populate populates the grid cells with sphere indexes.
 __host__ void Grid::Populate()
 {
-    for (int i = 0; i < _h_Spheres.size(); ++i)
+    _cellSize = _gridSize / _gridResolution;
+    _h_Cells.resize(_gridResolution.x * _gridResolution.y * _gridResolution.z);
+
+    for (int sphereIdx = 0; sphereIdx < _h_Spheres.size(); ++sphereIdx)
     {
-        const Sphere& sphere = _h_Spheres[i];
+        const Sphere& sphere = _h_Spheres[sphereIdx];
         glm::vec3 sphereBBoxMin = sphere.GetCenter() - sphere.GetRadius();
         glm::vec3 sphereBBoxMax = sphere.GetCenter() + sphere.GetRadius();
 
-        glm::ivec3 minCell = glm::floor(sphereBBoxMin / _cellSize);
-        glm::ivec3 maxCell = glm::ceil(sphereBBoxMax / _cellSize);
+        // Floor and ceil to get higher and lower cell indexes.
+        glm::vec3 minCell = glm::floor(sphereBBoxMin / _cellSize);
+        glm::vec3 maxCell = glm::ceil(sphereBBoxMax / _cellSize);
 
-        minCell = glm::clamp(minCell, glm::ivec3(0), glm::ivec3(_gridResolution - 1.0f));
-        maxCell = glm::clamp(maxCell, glm::ivec3(0), glm::ivec3(_gridResolution - 1.0f));
+        // Clamp to make sure we are within the grid's boundaries.
+        minCell = glm::clamp(minCell, glm::vec3(0.0f), glm::vec3(_gridResolution - 1.0f));
+        maxCell = glm::clamp(maxCell, glm::vec3(0.0f), glm::vec3(_gridResolution - 1.0f));
 
+        // Insert sphere indexes.
         for (int z = minCell.z; z <= maxCell.z; ++z)
         {
             for (int y = minCell.y; y <= maxCell.y; ++y)
             {
                 for (int x = minCell.x; x <= maxCell.x; ++x)
                 {
-                   
                     int cellIdx = GetCellIndex(x,y,z);
-                    _h_Cells[cellIdx].Add(i);
-                    
+                    _h_Cells[cellIdx].Add(sphereIdx);
                 }
             }
         }
     }
 }
 
+// CopyCellsToDevice allocates and copies cells array and internal cell data to the device.
 __host__ void Grid::CopyCellsToDevice()
 {
-    // Allocate memory for cells on the device.
     size_t numCells = _h_Cells.size();
-    CUDA_CHECK_ERROR(cudaMalloc((void**)&_d_Cells, numCells * sizeof(Cell)));
-
-    // Allocate and copy each cell from host to device.
+    CUDA_CHECK_ERROR(cudaMalloc(&_d_Cells, numCells * sizeof(Cell)));
     for (int i = 0; i < numCells; ++i)
     {
+        // Internal cell data must be copied to the device as well.
         _h_Cells[i].AllocateDeviceMemory();
         _h_Cells[i].CopyToDevice();
         CUDA_CHECK_ERROR(cudaMemcpy(&_d_Cells[i], &_h_Cells[i], sizeof(Cell), cudaMemcpyHostToDevice));
