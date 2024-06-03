@@ -35,7 +35,7 @@ Renderer::Renderer(Camera* camera, Light* light, std::vector<Sphere>& spheres, G
     if (error != cudaSuccess) {
         fprintf(stderr, "Failed to copy Grid: %s\n", cudaGetErrorString(error));
     }
-    std::cout << "Setup Renderer" << std::endl;
+    std::cout << "Finished setting up Renderer" << std::endl;
 }
 
 Renderer::~Renderer() {
