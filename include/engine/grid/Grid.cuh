@@ -25,7 +25,7 @@ private:
     thrust::host_vector<Sphere> _h_Spheres;
     thrust::device_vector<Sphere> _d_Spheres;
     Cell* _d_Cells;
-    int _numSpheres;
+    int _totalNumSpheres;
 
     __host__ void ComputeGridSize();
     __host__ void ComputeGridResolution();

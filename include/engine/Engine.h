@@ -18,7 +18,7 @@ public:
 	void draw();
 	void loadShaders();
 	void processQueue(float dt);
-
+	void Populate();
 private:
 	std::unique_ptr<Window> _window;
 	std::unique_ptr<Camera> _camera;

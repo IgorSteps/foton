@@ -1,10 +1,7 @@
 #include <engine/grid/Grid.cuh>
 
-__host__ Grid::Grid(std::vector<Sphere>& spheres)
+__host__ Grid::Grid(std::vector<Sphere>& spheres) : _totalNumSpheres(spheres.size()), _h_Spheres(spheres), _d_Spheres(_h_Spheres)
 {
-    _numSpheres = spheres.size();
-    _h_Spheres = spheres;
-    _d_Spheres = _h_Spheres;
     ComputeGridSize();
     ComputeGridResolution();
     Populate();
@@ -49,7 +46,7 @@ __device__ bool Grid::Intersect(const Ray& ray, HitData& hit)
     for (int i = 0; i < 3; ++i) 
     { 
         if (normalisedRayDir[i] > 0) // Positive ray direction
-        { 
+        {
             t[i] = ((cell[i] + 1) * _cellSize[i] - gridRelativeRayOrigin[i]) / normalisedRayDir[i];
             deltaT[i] = _cellSize[i] / normalisedRayDir[i];
             step[i] = 1;
@@ -114,16 +111,23 @@ __host__ void Grid::ComputeGridSize()
         _gridMax = glm::max(_gridMax, sphereMax);
     }
     _gridSize = _gridMax - _gridMin;
+
+    printf("Grid Min: (%f, %f, %f) \n", _gridMin.x, _gridMin.y, _gridMin.z);
+    printf("Grid Max: (%f, %f, %f) \n", _gridMax.x, _gridMax.y, _gridMax.z);
+    printf("Grid Size: (%f, %f, %f) \n", _gridSize.x, _gridSize.y, _gridSize.z);
 }
 
-// ComputeGridResolution using fancy maths.
+// ComputeGridResolution computes grid resolution based on the number of spheres and the scene overall volume.
 __host__ void Grid::ComputeGridResolution()
 {
-    int numOfSpheres = _h_Spheres.size();
     float volume = _gridSize.x * _gridSize.y * _gridSize.z;
-    float cubeRoot = std::pow(lambda * numOfSpheres / volume, 1.0f / 3.0f);
+    float cubeRoot = std::pow(_totalNumSpheres / volume, 1.0f / 3.0f);
 
-    _gridResolution = glm::vec3(_gridSize * cubeRoot);
+    _gridResolution = glm::max(glm::floor(_gridSize * cubeRoot), glm::vec3(1)); // Make sure it is atleast 1.
+    _cellSize = _gridSize / _gridResolution;
+
+    printf("Grid Resolution: (%f, %f, %f) \n", _gridResolution.x, _gridResolution.y, _gridResolution.z);
+    printf("Cell Size: (%f, %f, %f) \n", _cellSize.x, _cellSize.y, _cellSize.z);
 }
 
 // Populate populates the grid cells with sphere indexes.
@@ -154,6 +158,7 @@ __host__ void Grid::Populate()
                 for (int x = minCell.x; x <= maxCell.x; ++x)
                 {
                     int cellIdx = GetCellIndex(x,y,z);
+                    std::cout << "Adding Sphere index '" << sphereIdx << "' to Cell '" << cellIdx << std::endl;
                     _h_Cells[cellIdx].Add(sphereIdx);
                 }
             }

@@ -24,7 +24,7 @@ __global__ void GridKernel(glm::vec3* output, int width, int height, CameraData*
     }
     else
     {
-        colour = glm::vec3(1.0f); // White background.
+        colour = glm::vec3(1.0f);
     }
 
     output[j * width + i] = colour;

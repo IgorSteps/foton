@@ -19,7 +19,6 @@
     <ClCompile Include="src\engine\RayTracedImage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\utils\colour.h" />
     <ClInclude Include="include\engine\Engine.h" />
     <ClInclude Include="include\engine\Renderer.h" />
     <ClInclude Include="include\engine\Window.h" />
