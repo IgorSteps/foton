@@ -9,29 +9,32 @@ __host__ Grid::Grid(std::vector<Sphere>& spheres)
     ComputeGridResolution();
     Populate();
     CopyCellsToDevice();
-    std::cout << "Finished setting up Grid" << std::endl;
 }
 
-// Intersect traverses the grid using 3D-DDA algorithm.
-__device__ bool Grid::Intersect(const Ray& ray, float tMin, float tMax, HitData& hit)
+// Intersect traverses the grid and checks for sphere hits using 3D-DDA algorithm.
+__device__ bool Grid::Intersect(const Ray& ray, HitData& hit)
 {
     glm::vec3 normalisedRayDir = glm::normalize(ray.direction);
-    // Check if the ray intersects the grid.
-    float t0 = tMin, t1 = tMax;
+
+    // Check if the ray intersects the grid using AABB test.
+    float tGridEntry = 0.00001f, tGridExit = INFINITY;
     for (int i = 0; i < 3; ++i) 
     {
-        float invDir = 1.0f / normalisedRayDir[i];
-        float tNear = (_gridMin[i] - ray.origin[i]) * invDir;
-        float tFar = (_gridMax[i] - ray.origin[i]) * invDir;
-        if (tNear > tFar) 
+        float tMin = (_gridMin[i] - ray.origin[i]) / normalisedRayDir[i];
+        float tMax = (_gridMax[i] - ray.origin[i]) / normalisedRayDir[i];
+        // Make sure tMin is always smaller than tMax.
+        if (tMin > tMax) 
         {
-            float temp = tNear;
-            tNear = tFar;
-            tFar = temp;
+            float tempTMin = tMin;
+            tMin = tMax;
+            tMax = tempTMin;
         }
-        t0 = tNear > t0 ? tNear : t0;
-        t1 = tFar < t1 ? tFar : t1;
-        if (t0 > t1) {
+
+        // Also set a valid hit interval for the ray to the grid boundaries.
+        tGridEntry = glm::max(tMin, tGridEntry);
+        tGridExit = glm::min(tMax, tGridExit);
+        if (tGridEntry > tGridExit) 
+        { 
             return false;
         }
     }
@@ -54,19 +57,18 @@ __device__ bool Grid::Intersect(const Ray& ray, float tMin, float tMax, HitData&
         else
         {
             t[i] = (cell[i] * _cellSize[i] - gridRelativeRayOrigin[i]) / normalisedRayDir[i];
-            deltaT[i] = -_cellSize[i] / normalisedRayDir[i];
+            deltaT[i] = _cellSize[i] / normalisedRayDir[i];
             step[i] = -1;
         }
     }
-    
+
     // Traverse.
     while (true) {
         int cellIdx = GetCellIndex(cell.x, cell.y, cell.z);
-        if (_d_Cells[cellIdx].Intersect(
-            thrust::raw_pointer_cast(_d_Spheres.data()),
-            _d_Cells[cellIdx].GetNumSpheres(),
-            ray, tMin, tMax, hit)
-        ) 
+        const Cell& currentCell = _d_Cells[cellIdx];
+        Sphere* spheres = thrust::raw_pointer_cast(_d_Spheres.data());
+        int numSpheres = currentCell.GetNumSpheres();
+        if (currentCell.Intersect(spheres, numSpheres, ray, tGridEntry, tGridExit, hit)) // Using grid boundaries for hit interval.
         {
             return true;
         }

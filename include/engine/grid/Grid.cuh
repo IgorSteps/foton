@@ -10,7 +10,7 @@ public:
     __host__ Grid(std::vector<Sphere>& spheres);
     __host__ ~Grid();
 
-    __device__ bool Intersect(const Ray& ray, float tMin, float tMax, HitData& hit);
+    __device__ bool Intersect(const Ray& ray, HitData& hitData);
 
 private:
     glm::vec3 _gridResolution;

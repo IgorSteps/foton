@@ -18,6 +18,7 @@ float SCR_HEIGHT = 800.0f;
 Engine::Engine()
 {
     init();
+    std::cout << "All initlised, let's go" << std::endl;
 }
 
 void Engine::run()

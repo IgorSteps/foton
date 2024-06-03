@@ -13,14 +13,14 @@ __host__ void Cell::Add(int sphereIdx)
     _h_NumSpheres = _h_SphereIndxs.size();
 }
 
-__device__ bool Cell::Intersect(Sphere* spheres, int numSpheres, const Ray& ray, float tMin, float tMax, HitData& hit) const
+__device__ bool Cell::Intersect(Sphere* spheres, int numSpheres, const Ray& ray, float tMin, float closestSoFar, HitData& hitData) const
 {
     bool hitSphere = false;
     for (int i = 0; i < numSpheres; ++i)
     {
-        if (spheres[_d_SphereIndxs[i]].Hit(ray, tMin, tMax, hit))
+        if (spheres[_d_SphereIndxs[i]].Hit(ray, tMin, closestSoFar, hitData))
         {
-            tMax = hit.t;
+            closestSoFar = hitData.t;
             hitSphere = true;
         }
     }
