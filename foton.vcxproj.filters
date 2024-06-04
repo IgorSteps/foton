@@ -19,7 +19,6 @@
     <ClCompile Include="src\engine\RayTracedImage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\utils\colour.h" />
     <ClInclude Include="include\engine\Engine.h" />
     <ClInclude Include="include\engine\Renderer.h" />
     <ClInclude Include="include\engine\Window.h" />
@@ -33,14 +32,14 @@
     <ClInclude Include="include\engine\message\EventQueue.h" />
     <ClInclude Include="include\engine\Ray.h" />
     <ClInclude Include="include\engine\graphics\Texture.h" />
-    <ClInclude Include="include\engine\cuda\renderData.cuh" />
     <ClInclude Include="include\engine\cuda\InteropBuffer.h" />
     <ClInclude Include="include\engine\gl\PBOBuffer.h" />
     <ClInclude Include="include\engine\hittables\Sphere.h" />
     <ClInclude Include="include\engine\RayTracedImage.h" />
     <ClInclude Include="include\engine\Light.h" />
-    <ClInclude Include="include\engine\hittables\Ground.h" />
     <ClInclude Include="include\engine\hittables\Hitdata.h" />
+    <ClInclude Include="include\engine\grid\Cell.cuh" />
+    <ClInclude Include="include\engine\grid\Grid.cuh" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw\glfw3.lib" />
@@ -50,6 +49,10 @@
     <Text Include="src\engine\gl\shaders\basicVertex.vert" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="src\engine\cuda\renderKernel.cu" />
+    <CudaCompile Include="src\engine\cuda\SimplePhongKernel.cu" />
+    <CudaCompile Include="src\engine\cuda\GridKernel.cu" />
+    <CudaCompile Include="src\engine\grid\Cell.cu" />
+    <CudaCompile Include="src\engine\grid\Grid.cu" />
+    <CudaCompile Include="src\engine\cuda\SimpleKernel.cu" />
   </ItemGroup>
 </Project>

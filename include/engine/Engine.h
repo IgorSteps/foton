@@ -8,7 +8,7 @@
 #include <engine/RayTracedImage.h>
 #include <engine/cuda/InteropBuffer.h>
 #include <engine/hittables/Sphere.h>
-
+#include <engine/grid/Grid.cuh>
 class Engine {
 public:
 	Engine();
@@ -18,7 +18,7 @@ public:
 	void draw();
 	void loadShaders();
 	void processQueue(float dt);
-
+	void Populate(int numSpheres, int spheresPerRow);
 private:
 	std::unique_ptr<Window> _window;
 	std::unique_ptr<Camera> _camera;
@@ -28,8 +28,8 @@ private:
 	std::unique_ptr <InteropBuffer> _interopBuffer;
 	std::vector<Sphere> _spheres;
 	PBO* _pbo;
-
-	Light* light;
+	Light* _light;
+	Grid* _grid;
 
 	// FPS.
 	int _frameCount = 0;

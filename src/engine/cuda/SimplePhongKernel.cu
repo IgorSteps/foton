@@ -2,21 +2,6 @@
 #include "device_launch_parameters.h"
 #include <engine/Renderer.h>
 
-
-
-__device__ Ray GetRay(const CameraData* cam, float u, float v) {
-    float tanFovHalf = tanf(glm::radians(cam->fov / 2.0f));
-
-    float ndcX = (2.0f * u) - 1.0f;
-    float ndcY = 1.0f - (2.0f * v);
-
-    float camX = ndcX * cam->aspectRatio * tanFovHalf;
-    float camY = ndcY * tanFovHalf;
-
-    glm::vec3 rayDirection = glm::normalize(cam->front + camX * cam->right - camY * cam->up);
-    return Ray{ cam->position, rayDirection };
-}
-
 __device__ bool isInShadow(const Ray& ray, const Sphere* d_spheres, const int numOfSpheres, float lightDist)
 {
     HitData tempHit;
@@ -49,10 +34,10 @@ __device__ glm::vec3 ComputePhongIllumination(
     glm::vec3 lightDir = glm::normalize(light->position - hit.point);
 
     // Setup shadow ray.
-    Ray shadowRay;
+    Ray shadowRay(hit.point, lightDir);
 
-    shadowRay.origin = hit.point;
-    shadowRay.direction = lightDir;
+    /*shadowRay.origin = hit.point;
+    shadowRay.direction = lightDir;*/
     float distanceToLight = glm::length(light->position - hit.point);
 
     // Check if the point is in shadow
@@ -80,14 +65,14 @@ __device__ glm::vec3 ComputePhongIllumination(
 
 
 __global__
-void renderKernel(
+void SimplePhongIllumination(
     glm::vec3* output,
     int width,
     int height,
     CameraData* camData,
-    Sphere* d_spheres,
+    Sphere* d_Spheres,
     int numOfSpheres,
-    Light* d_light
+    Light* d_Light
 )
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -99,7 +84,7 @@ void renderKernel(
     float u = float(i) / (width - 1);
     float v = float(j) / (height - 1);
 
-    Ray ray = GetRay(camData, u, v);
+    Ray ray = Ray(camData, u, v);
     HitData hitData;
 
     // Keeps track of the closest hit.
@@ -111,18 +96,18 @@ void renderKernel(
 
     for (int x = 0; x < numOfSpheres; x++)
     {
-        if (d_spheres[x].Hit(ray, 0.001f, closestSoFar, hitData))
+        if (d_Spheres[x].Hit(ray, 0.001f, closestSoFar, hitData))
         {
             closestSoFar = hitData.t;
             hitSomething = true;
 
-            if (!d_spheres[x].IsLight())
+            if (!d_Spheres[x].IsLight())
             {
-                color = ComputePhongIllumination(d_light, hitData, d_spheres, numOfSpheres, d_spheres[x].GetColour());
+                color = ComputePhongIllumination(d_Light, hitData, d_Spheres, numOfSpheres, d_Spheres[x].GetColour());
             }
             else
             {
-                color = d_spheres[x].GetColour();
+                color = d_Spheres[x].GetColour();
             }
 
 
@@ -139,22 +124,14 @@ void renderKernel(
     output[j * width + i] = color;
 }
 
-void Renderer::RenderUsingCUDA(float width, float height, void* cudaPtr, int numOfSpheres)
+void Renderer::RayTracePhong(float width, float height, void* cudaPtr, int numOfSpheres)
 {
-    // Launch CUDA kernel
     dim3 threadsPerBlock(16, 16);
     dim3 numBlocks(
         (width + threadsPerBlock.x - 1) / threadsPerBlock.x,
         (height + threadsPerBlock.y - 1) / threadsPerBlock.y
     );
 
-    renderKernel <<<numBlocks, threadsPerBlock>>> (static_cast<glm::vec3*>(cudaPtr), width, height, d_cameraData, d_spheres, numOfSpheres,  d_light);
-
-    cudaDeviceSynchronize();
-
-    cudaError_t error = cudaGetLastError();
-    if (error != cudaSuccess) 
-    {
-        fprintf(stderr, "CUDA error in kernel launch: %s\n", cudaGetErrorString(error));
-    }
+    SimplePhongIllumination<<<numBlocks, threadsPerBlock>>>(static_cast<glm::vec3*>(cudaPtr), width, height, d_Camera, d_Spheres, numOfSpheres,  d_Light);
+    CUDA_CHECK_ERROR(cudaDeviceSynchronize());
 }

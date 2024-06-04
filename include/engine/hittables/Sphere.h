@@ -25,7 +25,7 @@ public:
         float discriminant = b * b - 4 * a * c;
 
         if (discriminant < 0) 
-        {  
+        {
             return false;
         }
         
@@ -43,17 +43,18 @@ public:
         // Set hit data.
         hit.t = root;
         hit.point = r.At(hit.t);
-        hit.normal = glm::normalize((hit.point - _center)/_radius) ;
+        hit.normal = glm::normalize((hit.point - _center)/_radius);
+        hit.colour = _colour;
 
         return true;
     }
 
-    __device__ glm::vec3 GetCenter() const
+    __host__ __device__ glm::vec3 GetCenter() const
     {
         return _center;
     }
 
-    __device__ float GetRadius() const
+    __host__ __device__ float GetRadius() const
     {
         return _radius;
     }
@@ -72,6 +73,5 @@ private:
     glm::vec3 _center;
     glm::vec3 _colour;
     float _radius;
-
     bool _isLight;
 };
