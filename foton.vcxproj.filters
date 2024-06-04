@@ -53,5 +53,6 @@
     <CudaCompile Include="src\engine\cuda\GridKernel.cu" />
     <CudaCompile Include="src\engine\grid\Cell.cu" />
     <CudaCompile Include="src\engine\grid\Grid.cu" />
+    <CudaCompile Include="src\engine\cuda\SimpleKernel.cu" />
   </ItemGroup>
 </Project>

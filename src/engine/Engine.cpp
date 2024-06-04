@@ -91,8 +91,9 @@ void Engine::init()
     _spheres.push_back(groundSphere);
     Sphere lightSphere(glm::vec3(3.0f, 3.0f, -0.5f), 0.3f, glm::vec3(1.0f), true);
     _spheres.push_back(lightSphere);*/
-    
-    Populate(5, 5, 3, 4);
+    /*Sphere mainSphere(glm::vec3(0.0f, 0.0f, -1.0f), 1.0f, glm::vec3(1.0f, 0.5f, 0.31f), false);
+    _spheres.push_back(mainSphere);*/
+    Populate(50, 10);
 
     // Light:
     _light = new Light(glm::vec3(3.0f, 3.0f, -0.5f), glm::vec3(1.0f), 1.5);
@@ -114,6 +115,7 @@ void Engine::update(float dt)
     // Update PBO data with CUDA.
     //_renderer->Update(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
     _renderer->UpdateGrid(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
+    //_renderer->UpdateSimple(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
 
     // Update Camera data on GPU.
     _renderer->UpdateCameraData(SCR_WIDTH, SCR_HEIGHT);
@@ -176,14 +178,15 @@ void  Engine::processQueue(float dt)
     }
 }
 
-void Engine::Populate(int numRows, int spheresPerRow, int sphereDist, int rowDist)
+void Engine::Populate(int numSpheres, int spheresPerRow)
 {
-    for (int row = 0; row < numRows; ++row)
+    int numRows = numSpheres / 10;
+    for (int row = 0; row < 2; ++row)
     {
-        for (int i = 0; i < spheresPerRow; ++i)
+        for (int i = 0; i < 5; ++i)
         {
-            float x = (i - spheresPerRow / 2) * sphereDist;
-            float z = -1.0f - row * rowDist;
+            float x = (i - 5 / 2) * 3;
+            float z = -1.0f - row * 3;
             glm::vec3 position(x, 0.0f, z);
             glm::vec3 colour(0.5f + 0.5f * (i % 2), 0.5f * (row % 2), 0.5f + 0.5f * ((i + row) % 2));
             _spheres.push_back(Sphere(position, 1.0f, colour, false));

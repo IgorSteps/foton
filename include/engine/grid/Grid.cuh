@@ -18,12 +18,12 @@ private:
     glm::vec3 _cellSize;
     glm::vec3 _gridMin;
     glm::vec3 _gridMax;
-    // _balancingFactor determines the appropriate grid resolution for the given scene,
-    // after my experiments, for the scene with 50 spheres
-    const int _balancingFactor = 0.1;
+    // _balancingFactor is a paramenter that allwos to fine-tune grid resolution
+    // using experimentation.
+    const int _balancingFactor = 0.5;
     // 1D array that stores 3D coords in the following format:
     // First all x coords, then all y coords and lastly all z coords.
-    thrust::host_vector<Cell> _h_Cells;
+    std::vector<Cell> _h_Cells;
     thrust::host_vector<Sphere> _h_Spheres;
     thrust::device_vector<Sphere> _d_Spheres;
     Cell* _d_Cells;

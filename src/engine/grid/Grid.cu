@@ -121,7 +121,7 @@ __host__ void Grid::ComputeGridSize()
 __host__ void Grid::ComputeGridResolution()
 {
     float volume = _gridSize.x * _gridSize.y * _gridSize.z;
-    float cubeRoot = std::powf(_balancingFactor * _totalNumSpheres / volume, 1.0f / 3.0f);
+    float cubeRoot = std::powf( _totalNumSpheres / volume, 1.0f / 3.0f);
   
     _gridResolution = glm::max(glm::floor(_gridSize * cubeRoot), glm::vec3(1)); // Make sure it is atleast 1.
     _cellSize = _gridSize / _gridResolution;
@@ -134,21 +134,36 @@ __host__ void Grid::ComputeGridResolution()
 __host__ void Grid::Populate()
 {
     _cellSize = _gridSize / _gridResolution;
-    _h_Cells.resize(_gridResolution.x * _gridResolution.y * _gridResolution.z);
+    int numOfCells = _gridResolution.x * _gridResolution.y * _gridResolution.z;
+    _h_Cells.resize(numOfCells);
+    // Init each cell, does vector do this automatically?
+    for (Cell& cell : _h_Cells) 
+    {
+        cell = Cell();
+    }
 
     for (int sphereIdx = 0; sphereIdx < _h_Spheres.size(); ++sphereIdx)
     {
         const Sphere& sphere = _h_Spheres[sphereIdx];
         glm::vec3 sphereBBoxMin = sphere.GetCenter() - sphere.GetRadius();
         glm::vec3 sphereBBoxMax = sphere.GetCenter() + sphere.GetRadius();
+        printf("Sphere index '%d' -> Center: (%f, %f, %f), Radius: %f\n", sphereIdx, sphere.GetCenter().x, sphere.GetCenter().y, sphere.GetCenter().z, sphere.GetRadius());
+        printf("Sphere index '%d' -> BBox Min: (%f, %f, %f), BBox Max: (%f, %f, %f)\n",
+            sphereIdx, sphereBBoxMin.x, sphereBBoxMin.y, sphereBBoxMin.z, sphereBBoxMax.x, sphereBBoxMax.y, sphereBBoxMax.z);
 
-        // Floor and ceil to get higher and lower cell indexes.
-        glm::vec3 minCell = glm::floor(sphereBBoxMin / _cellSize);
-        glm::vec3 maxCell = glm::ceil(sphereBBoxMax / _cellSize);
+        // Convert to cell coords.
+        glm::ivec3 minCell = glm::floor((sphereBBoxMin - _gridMin) / _cellSize);
+        glm::ivec3 maxCell = glm::floor((sphereBBoxMax - _gridMin) / _cellSize);
+
+        printf("Converted to cell coords for Sphere index '%d' -> minCell: (%f, %f, %f), maxCell: (%f, %f, %f)\n",
+            sphereIdx, minCell.x, minCell.y, minCell.z, maxCell.x, maxCell.y, maxCell.z);
 
         // Clamp to make sure we are within the grid's boundaries.
-        minCell = glm::clamp(minCell, glm::vec3(0.0f), glm::vec3(_gridResolution - 1.0f));
-        maxCell = glm::clamp(maxCell, glm::vec3(0.0f), glm::vec3(_gridResolution - 1.0f));
+        minCell = glm::clamp(minCell, glm::ivec3(0), glm::ivec3(_gridResolution - 1.0f));
+        maxCell = glm::clamp(maxCell, glm::ivec3(0), glm::ivec3(_gridResolution - 1.0f));
+
+        printf("Clamped cell coords for Sphere index '%d' -> Min Cell: (%d, %d, %d), Max Cell: (%d, %d, %d)\n",
+            sphereIdx, minCell.x, minCell.y, minCell.z, maxCell.x, maxCell.y, maxCell.z);
 
         // Insert sphere indexes.
         for (int z = minCell.z; z <= maxCell.z; ++z)
@@ -164,6 +179,7 @@ __host__ void Grid::Populate()
             }
         }
     }
+    printf("Number of cells: %d \n", _h_Cells.size());
 }
 
 // CopyCellsToDevice allocates and copies cells array and internal cell data to the device.

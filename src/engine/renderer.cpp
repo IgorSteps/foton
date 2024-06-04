@@ -98,3 +98,17 @@ void Renderer::UpdateGrid(float width, float height, std::unique_ptr<InteropBuff
 
     interopBuffer->UnmapCudaResource();
 }
+
+void Renderer::UpdateSimple(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer)
+{
+    interopBuffer->MapCudaResource();
+
+    size_t size;
+    void* cudaPtr = interopBuffer->GetCudaMappedPtr(&size);
+    int numSpheres = static_cast<int>(h_Spheres.size());
+
+    // Update the PBO data via cudaPtr.
+    RayTraceSimple(width, height, cudaPtr, numSpheres);
+
+    interopBuffer->UnmapCudaResource();
+}

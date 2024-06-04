@@ -18,9 +18,10 @@ public:
     void UpdateLightData();
     void Update(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer);
     void UpdateGrid(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer);
-    void RenderUsingCUDA(float width, float height, void* cudaPtr, int numOfSphere);
+    void UpdateSimple(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer);
+    void RenderUsingCUDA(float width, float height, void* cudaPtr, int numOfSpheres);
     void RayTraceGrid(float width, float height, void* cudaPtr);
-
+    void RayTraceSimple(float width, float height, void* cudaPtr, int numOfSpheres);
 private:
     std::vector<Sphere> h_Spheres;
     Camera* h_Camera;
