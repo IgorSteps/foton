@@ -74,7 +74,7 @@ __device__ glm::vec3 ComputePhongIllumination(
         glm::vec3 diffuse = diff * light->color;
 
         glm::vec3 result = (diffuse + ambient) * objectColor;
-        return ambient + result;
+        return result;
     }
 }
 
