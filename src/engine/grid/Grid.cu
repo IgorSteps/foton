@@ -47,44 +47,48 @@ __device__ bool Grid::Intersect(const Ray& ray, HitData& hit)
     { 
         if (normalisedRayDir[i] > 0) // Positive ray direction
         {
-            t[i] = ((cell[i] + 1) * _cellSize[i] - gridRelativeRayOrigin[i]) / normalisedRayDir[i];
+            t[i] = ((cell[i] + 1) * _cellSize[i] - gridRelativeRayOrigin[i]) / normalisedRayDir[i]; // Add '1' to cell to get next boundary index.
             deltaT[i] = _cellSize[i] / normalisedRayDir[i];
             step[i] = 1;
         }
         else
         {
             t[i] = (cell[i] * _cellSize[i] - gridRelativeRayOrigin[i]) / normalisedRayDir[i];
-            deltaT[i] = _cellSize[i] / normalisedRayDir[i];
+            deltaT[i] = -(_cellSize[i] / normalisedRayDir[i]); // Makes sure deltaT is always positive for accurate traversing.
             step[i] = -1;
         }
     }
 
     // Traverse.
     while (true) {
-        int cellIdx = GetCellIndex(cell.x, cell.y, cell.z);
+        const int cellIdx = GetCellIndex(cell.x, cell.y, cell.z);
         const Cell& currentCell = _d_Cells[cellIdx];
-        Sphere* spheres = thrust::raw_pointer_cast(_d_Spheres.data());
-        int numSpheres = currentCell.GetNumSpheres();
+        const Sphere* spheres = thrust::raw_pointer_cast(_d_Spheres.data());
+        const int numSpheres = currentCell.GetNumSpheres();
+        
         if (currentCell.Intersect(spheres, numSpheres, ray, tGridEntry, tGridExit, hit)) // Using grid boundaries for hit interval.
         {
             return true;
         }
 
-        // Determine the next cell to step to.
-        if (t.x < t.y && t.x < t.z) {
+        // Step to the next cell depending on the smallest intersection point.
+        if (t.x < t.y && t.x < t.z) 
+        {
             t.x += deltaT.x;
             cell.x += step.x;
         }
-        else if (t.y < t.z) {
+        else if (t.y < t.z) 
+        {
             t.y += deltaT.y;
             cell.y += step.y;
         }
-        else {
+        else 
+        {
             t.z += deltaT.z;
             cell.z += step.z;
         }
 
-        // Out-of-bounds check.
+        // Break when the ray is out of bounds.
         if (
             cell.x < 0 || cell.x >= _gridResolution.x ||
             cell.y < 0 || cell.y >= _gridResolution.y ||
@@ -136,34 +140,21 @@ __host__ void Grid::Populate()
     _cellSize = _gridSize / _gridResolution;
     int numOfCells = _gridResolution.x * _gridResolution.y * _gridResolution.z;
     _h_Cells.resize(numOfCells);
-    // Init each cell, does vector do this automatically?
-    for (Cell& cell : _h_Cells) 
-    {
-        cell = Cell();
-    }
+    printf("Number of cells: %d \n", _h_Cells.size());
 
     for (int sphereIdx = 0; sphereIdx < _h_Spheres.size(); ++sphereIdx)
     {
         const Sphere& sphere = _h_Spheres[sphereIdx];
         glm::vec3 sphereBBoxMin = sphere.GetCenter() - sphere.GetRadius();
         glm::vec3 sphereBBoxMax = sphere.GetCenter() + sphere.GetRadius();
-        printf("Sphere index '%d' -> Center: (%f, %f, %f), Radius: %f\n", sphereIdx, sphere.GetCenter().x, sphere.GetCenter().y, sphere.GetCenter().z, sphere.GetRadius());
-        printf("Sphere index '%d' -> BBox Min: (%f, %f, %f), BBox Max: (%f, %f, %f)\n",
-            sphereIdx, sphereBBoxMin.x, sphereBBoxMin.y, sphereBBoxMin.z, sphereBBoxMax.x, sphereBBoxMax.y, sphereBBoxMax.z);
 
         // Convert to cell coords.
         glm::ivec3 minCell = glm::floor((sphereBBoxMin - _gridMin) / _cellSize);
         glm::ivec3 maxCell = glm::floor((sphereBBoxMax - _gridMin) / _cellSize);
 
-        printf("Converted to cell coords for Sphere index '%d' -> minCell: (%f, %f, %f), maxCell: (%f, %f, %f)\n",
-            sphereIdx, minCell.x, minCell.y, minCell.z, maxCell.x, maxCell.y, maxCell.z);
-
         // Clamp to make sure we are within the grid's boundaries.
         minCell = glm::clamp(minCell, glm::ivec3(0), glm::ivec3(_gridResolution - 1.0f));
         maxCell = glm::clamp(maxCell, glm::ivec3(0), glm::ivec3(_gridResolution - 1.0f));
-
-        printf("Clamped cell coords for Sphere index '%d' -> Min Cell: (%d, %d, %d), Max Cell: (%d, %d, %d)\n",
-            sphereIdx, minCell.x, minCell.y, minCell.z, maxCell.x, maxCell.y, maxCell.z);
 
         // Insert sphere indexes.
         for (int z = minCell.z; z <= maxCell.z; ++z)
@@ -179,7 +170,6 @@ __host__ void Grid::Populate()
             }
         }
     }
-    printf("Number of cells: %d \n", _h_Cells.size());
 }
 
 // CopyCellsToDevice allocates and copies cells array and internal cell data to the device.
@@ -200,8 +190,10 @@ __host__ void Grid::CopyCellsToDevice()
 __device__ glm::vec3 Grid::GetCellCoords(const glm::vec3& worldPos) const
 {
     glm::vec3 gridRelativeCoords = (worldPos - _gridMin) / _cellSize;
+    // Floor to get the starting cell boundary index.
+    glm::vec3 lowerCellIndx = glm::floor(gridRelativeCoords);
     // Clamp to make sure the cell is within grid's boundaries.
-    return glm::clamp(glm::floor(gridRelativeCoords), glm::vec3(0.0f), _gridResolution - 1.0f);
+    return glm::clamp(lowerCellIndx, glm::vec3(0.0f), _gridResolution - 1.0f);
 }
 
 // GetCellIndex convert's 3D coordinates to 1D index.
