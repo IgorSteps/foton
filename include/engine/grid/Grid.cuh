@@ -10,6 +10,7 @@ public:
     __host__ Grid(std::vector<Sphere>& spheres);
     __host__ ~Grid();
 
+    // Intersect traverses the grid and checks for sphere hits using 3D-DDA algorithm.
     __device__ bool Intersect(const Ray& ray, HitData& hitData);
 
 private:
@@ -18,9 +19,9 @@ private:
     glm::vec3 _cellSize;
     glm::vec3 _gridMin;
     glm::vec3 _gridMax;
-    // _balancingFactor is a paramenter that allwos to fine-tune grid resolution
-    // using experimentation.
-    const int _balancingFactor = 0.5;
+    // _balancingFactor is a paramenter that allows to fine-tune grid resolution
+    // using experimentation. TODO: Play around with it
+    const int _balancingFactor = 3;
     // 1D array that stores 3D coords in the following format:
     // First all x coords, then all y coords and lastly all z coords.
     std::vector<Cell> _h_Cells;

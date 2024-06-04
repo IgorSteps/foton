@@ -61,7 +61,7 @@
     <Library Include="lib\glfw\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="src\engine\cuda\renderKernel.cu" />
+    <CudaCompile Include="src\engine\cuda\SimplePhongKernel.cu" />
     <CudaCompile Include="src\engine\cuda\GridKernel.cu" />
     <CudaCompile Include="src\engine\cuda\SimpleKernel.cu" />
     <CudaCompile Include="src\engine\grid\Cell.cu" />

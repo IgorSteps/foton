@@ -181,14 +181,14 @@ void  Engine::processQueue(float dt)
 void Engine::Populate(int numSpheres, int spheresPerRow)
 {
     int numRows = numSpheres / 10;
-    for (int row = 0; row < 2; ++row)
+    for (int row = 0; row < numRows; ++row)
     {
-        for (int i = 0; i < 5; ++i)
+        for (int i = 0; i < spheresPerRow; ++i)
         {
-            float x = (i - 5 / 2) * 3;
+            float x = (i - spheresPerRow / 2) * 3;
             float z = -1.0f - row * 3;
             glm::vec3 position(x, 0.0f, z);
-            glm::vec3 colour(0.5f + 0.5f * (i % 2), 0.5f * (row % 2), 0.5f + 0.5f * ((i + row) % 2));
+            glm::vec3 colour(0.5f + 0.5f * (i % 2), 0.5f * (row % 2), 0.5f + 0.5f * ((i + row) % 2)); // Some random colour.
             _spheres.push_back(Sphere(position, 1.0f, colour, false));
         }
     }

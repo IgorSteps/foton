@@ -39,11 +39,5 @@ void Renderer::RayTraceGrid(float width, float height, void* cudaPtr)
     );
 
     GridKernel<<<numBlocks, threadsPerBlock>>>(static_cast<glm::vec3*>(cudaPtr), width, height, d_Camera, d_Grid);
-    cudaDeviceSynchronize();
-
-    cudaError_t error = cudaGetLastError();
-    if (error != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to launch Grid kernel : % s\n", cudaGetErrorString(error));
-    }
+    CUDA_CHECK_ERROR(cudaDeviceSynchronize());
 }

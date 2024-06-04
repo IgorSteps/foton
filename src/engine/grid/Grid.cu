@@ -9,7 +9,7 @@ __host__ Grid::Grid(std::vector<Sphere>& spheres) : _totalNumSpheres(spheres.siz
 }
 
 // Intersect traverses the grid and checks for sphere hits using 3D-DDA algorithm.
-__device__ bool Grid::Intersect(const Ray& ray, HitData& hit)
+__device__ bool Grid::Intersect(const Ray& ray, HitData& hitData)
 {
     glm::vec3 normalisedRayDir = glm::normalize(ray.direction);
 
@@ -66,7 +66,7 @@ __device__ bool Grid::Intersect(const Ray& ray, HitData& hit)
         const Sphere* spheres = thrust::raw_pointer_cast(_d_Spheres.data());
         const int numSpheres = currentCell.GetNumSpheres();
         
-        if (currentCell.Intersect(spheres, numSpheres, ray, tGridEntry, tGridExit, hit)) // Using grid boundaries for hit interval.
+        if (currentCell.Intersect(spheres, numSpheres, ray, tGridEntry, tGridExit, hitData)) // Using grid boundaries for hit interval.
         {
             return true;
         }

@@ -9,7 +9,7 @@ void SimpleKernel(
     int width,
     int height,
     CameraData* camData,
-    Sphere* d_spheres,
+    Sphere* d_Spheres,
     int numOfSpheres
 )
 {
@@ -30,11 +30,11 @@ void SimpleKernel(
 
     for (int x = 0; x < numOfSpheres; x++)
     {
-        if (d_spheres[x].Hit(ray, 0.001f, closestSoFar, hitData))
+        if (d_Spheres[x].Hit(ray, 0.001f, closestSoFar, hitData))
         {
             closestSoFar = hitData.t;
             hitSomething = true;
-            colour = d_spheres[x].GetColour();
+            colour = d_Spheres[x].GetColour();
         }
     }
 
@@ -57,13 +57,6 @@ void Renderer::RayTraceSimple(float width, float height, void* cudaPtr, int numO
         (height + threadsPerBlock.y - 1) / threadsPerBlock.y
     );
 
-    SimpleKernel<<<numBlocks, threadsPerBlock>>>(static_cast<glm::vec3*>(cudaPtr), width, height, d_Camera, d_spheres, numOfSpheres);
-
-    cudaDeviceSynchronize();
-
-    cudaError_t error = cudaGetLastError();
-    if (error != cudaSuccess)
-    {
-        fprintf(stderr, "CUDA error in Simple kernel launch: %s\n", cudaGetErrorString(error));
-    }
+    SimpleKernel<<<numBlocks, threadsPerBlock>>>(static_cast<glm::vec3*>(cudaPtr), width, height, d_Camera, d_Spheres, numOfSpheres);
+    CUDA_CHECK_ERROR(cudaDeviceSynchronize());
 }

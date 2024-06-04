@@ -65,14 +65,14 @@ __device__ glm::vec3 ComputePhongIllumination(
 
 
 __global__
-void renderKernel(
+void SimplePhongIllumination(
     glm::vec3* output,
     int width,
     int height,
     CameraData* camData,
-    Sphere* d_spheres,
+    Sphere* d_Spheres,
     int numOfSpheres,
-    Light* d_light
+    Light* d_Light
 )
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -96,18 +96,18 @@ void renderKernel(
 
     for (int x = 0; x < numOfSpheres; x++)
     {
-        if (d_spheres[x].Hit(ray, 0.001f, closestSoFar, hitData))
+        if (d_Spheres[x].Hit(ray, 0.001f, closestSoFar, hitData))
         {
             closestSoFar = hitData.t;
             hitSomething = true;
 
-            if (!d_spheres[x].IsLight())
+            if (!d_Spheres[x].IsLight())
             {
-                color = ComputePhongIllumination(d_light, hitData, d_spheres, numOfSpheres, d_spheres[x].GetColour());
+                color = ComputePhongIllumination(d_Light, hitData, d_Spheres, numOfSpheres, d_Spheres[x].GetColour());
             }
             else
             {
-                color = d_spheres[x].GetColour();
+                color = d_Spheres[x].GetColour();
             }
 
 
@@ -124,22 +124,14 @@ void renderKernel(
     output[j * width + i] = color;
 }
 
-void Renderer::RenderUsingCUDA(float width, float height, void* cudaPtr, int numOfSpheres)
+void Renderer::RayTracePhong(float width, float height, void* cudaPtr, int numOfSpheres)
 {
-    // Launch CUDA kernel
     dim3 threadsPerBlock(16, 16);
     dim3 numBlocks(
         (width + threadsPerBlock.x - 1) / threadsPerBlock.x,
         (height + threadsPerBlock.y - 1) / threadsPerBlock.y
     );
 
-    renderKernel <<<numBlocks, threadsPerBlock>>> (static_cast<glm::vec3*>(cudaPtr), width, height, d_Camera, d_spheres, numOfSpheres,  d_light);
-
-    cudaDeviceSynchronize();
-
-    cudaError_t error = cudaGetLastError();
-    if (error != cudaSuccess) 
-    {
-        fprintf(stderr, "CUDA error in kernel launch: %s\n", cudaGetErrorString(error));
-    }
+    SimplePhongIllumination<<<numBlocks, threadsPerBlock>>>(static_cast<glm::vec3*>(cudaPtr), width, height, d_Camera, d_Spheres, numOfSpheres,  d_Light);
+    CUDA_CHECK_ERROR(cudaDeviceSynchronize());
 }

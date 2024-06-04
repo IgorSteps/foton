@@ -49,7 +49,7 @@
     <Text Include="src\engine\gl\shaders\basicVertex.vert" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="src\engine\cuda\renderKernel.cu" />
+    <CudaCompile Include="src\engine\cuda\SimplePhongKernel.cu" />
     <CudaCompile Include="src\engine\cuda\GridKernel.cu" />
     <CudaCompile Include="src\engine\grid\Cell.cu" />
     <CudaCompile Include="src\engine\grid\Grid.cu" />
