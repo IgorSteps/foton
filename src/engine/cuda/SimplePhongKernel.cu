@@ -35,13 +35,8 @@ __device__ bool isInShadow(const Ray& ray, const Sphere* d_Spheres, const int nu
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
         }
     }
-
     return false;
 }
 
@@ -69,7 +64,7 @@ __device__ glm::vec3 ComputePhongIllumination(
     }
     else 
     {
-        //Diffuse.
+        // Diffuse.
         float diff = max(glm::dot(hit.normal, lightDir), 0.0f);
         glm::vec3 diffuse = diff * light->color;
 
