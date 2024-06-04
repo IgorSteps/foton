@@ -19,7 +19,7 @@ Renderer::~Renderer()
 void Renderer::AllocateDeviceMemory()
 {
     CUDA_CHECK_ERROR(cudaMalloc(&d_Camera, sizeof(CameraData)));
-    CUDA_CHECK_ERROR(cudaMalloc(&d_Light, sizeof(CameraData)));
+    CUDA_CHECK_ERROR(cudaMalloc(&d_Light, sizeof(Light)));
     CUDA_CHECK_ERROR(cudaMalloc(&d_Spheres, h_Spheres.size() * sizeof(Sphere)));
     CUDA_CHECK_ERROR(cudaMalloc(&d_Grid, sizeof(Grid)));
 }
@@ -27,7 +27,7 @@ void Renderer::AllocateDeviceMemory()
 void Renderer::CopyToDevice()
 {
     UpdateCameraData(1200.0f, 800.0f);
-    CUDA_CHECK_ERROR(cudaMemcpy(d_Light, &h_Light, sizeof(Light), cudaMemcpyHostToDevice););
+    CUDA_CHECK_ERROR(cudaMemcpy(d_Light, h_Light, sizeof(Light), cudaMemcpyHostToDevice););
     CUDA_CHECK_ERROR(cudaMemcpy(d_Spheres, h_Spheres.data(), h_Spheres.size() * sizeof(Sphere), cudaMemcpyHostToDevice));
     CUDA_CHECK_ERROR(cudaMemcpy(d_Grid, h_Grid, sizeof(Grid), cudaMemcpyHostToDevice));
 }

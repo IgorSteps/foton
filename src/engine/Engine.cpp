@@ -87,13 +87,13 @@ void Engine::init()
     _camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 
     // Spheres:
-   /* Sphere groundSphere(glm::vec3(0.0f, -510.0f, -1.0f), 500.0f, glm::vec3(0.96f, 0.96f, 0.86f), false);
+    Sphere groundSphere(glm::vec3(0.0f, -501.0f, -1.0f), 500.0f, glm::vec3(0.96f, 0.96f, 0.86f), false);
     _spheres.push_back(groundSphere);
     Sphere lightSphere(glm::vec3(3.0f, 3.0f, -0.5f), 0.3f, glm::vec3(1.0f), true);
-    _spheres.push_back(lightSphere);*/
-    /*Sphere mainSphere(glm::vec3(0.0f, 0.0f, -1.0f), 1.0f, glm::vec3(1.0f, 0.5f, 0.31f), false);
-    _spheres.push_back(mainSphere);*/
-    Populate(50, 10);
+    _spheres.push_back(lightSphere);
+    Sphere mainSphere(glm::vec3(0.0f, 0.0f, -1.0f), 1.0f, glm::vec3(1.0f, 0.5f, 0.31f), false);
+    _spheres.push_back(mainSphere);
+    //Populate(50, 10);
 
     // Light:
     _light = new Light(glm::vec3(3.0f, 3.0f, -0.5f), glm::vec3(1.0f), 1.5);
@@ -113,8 +113,8 @@ void Engine::update(float dt)
     _interopBuffer->Update(SCR_WIDTH, SCR_HEIGHT);
 
     // Update PBO data with CUDA.
-    //_renderer->Update(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
-    _renderer->UpdateGrid(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
+    _renderer->UpdatePhong(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
+    //_renderer->UpdateGrid(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
     //_renderer->UpdateSimple(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
 
     // Update Camera data on GPU.
