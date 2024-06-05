@@ -2,24 +2,41 @@
 #include "device_launch_parameters.h"
 #include <engine/Renderer.h>
 
-__device__ bool isInShadow(const Ray& ray, const Sphere* d_spheres, const int numOfSpheres, float lightDist)
+//__device__ glm::vec3 ComputePhongIlluminationWithoutShadows(
+//    Light* light,
+//    const HitData& hit,
+//    const Sphere* d_spheres,
+//    int numOfSpheres,
+//    const glm::vec3& objectColor
+//)
+//{
+//    glm::vec3 lightDir = glm::normalize(light->position - hit.point);
+//
+//    // Ambient.
+//    float ambientStrength = 0.1f;
+//    glm::vec3 ambient = ambientStrength * light->color; 
+//    
+//    //Diffuse.
+//    float diff = max(glm::dot(hit.normal, lightDir), 0.0f);
+//    glm::vec3 diffuse = diff * light->color;
+//    glm::vec3 result = (diffuse + ambient) * objectColor;
+//
+//    return result;
+//}
+
+__device__ bool isInShadow(const Ray& ray, const Sphere* d_Spheres, const int numOfSpheres, float lightDist)
 {
     HitData tempHit;
     for (int i = 0; i < numOfSpheres; ++i)
     {
-        if (d_spheres[i].Hit(ray, 0.001f, lightDist, tempHit))
+        if (d_Spheres[i].Hit(ray, 0.001f, lightDist, tempHit))
         {
-            if (!d_spheres[i].IsLight())
+            if (!d_Spheres[i].IsLight())
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
         }
     }
-
     return false;
 }
 
@@ -33,23 +50,16 @@ __device__ glm::vec3 ComputePhongIllumination(
 {
     glm::vec3 lightDir = glm::normalize(light->position - hit.point);
 
-    // Setup shadow ray.
-    Ray shadowRay(hit.point, lightDir);
-
-    /*shadowRay.origin = hit.point;
-    shadowRay.direction = lightDir;*/
-    float distanceToLight = glm::length(light->position - hit.point);
-
     // Check if the point is in shadow
+    Ray shadowRay(hit.point, lightDir);
+    float distanceToLight = glm::length(light->position - hit.point);
     bool inShadow = isInShadow(shadowRay, d_spheres, numOfSpheres, distanceToLight);
 
     // Ambient.
     float ambientStrength = 0.1f;
     glm::vec3 ambient = ambientStrength * light->color;
-
     if (inShadow) 
     {
-        // If in shadow, only ambient light
         return ambient * objectColor;
     }
     else 
@@ -62,7 +72,6 @@ __device__ glm::vec3 ComputePhongIllumination(
         return result;
     }
 }
-
 
 __global__
 void SimplePhongIllumination(
@@ -83,17 +92,12 @@ void SimplePhongIllumination(
     // Normalise screen coordinates
     float u = float(i) / (width - 1);
     float v = float(j) / (height - 1);
-
     Ray ray = Ray(camData, u, v);
+    
     HitData hitData;
-
-    // Keeps track of the closest hit.
     float closestSoFar = INFINITY;
-    // Keeps if we've hit anything.
     bool hitSomething = false;
-    // Start with black colour.
     glm::vec3 color = glm::vec3(0.0f);
-
     for (int x = 0; x < numOfSpheres; x++)
     {
         if (d_Spheres[x].Hit(ray, 0.001f, closestSoFar, hitData))
@@ -109,8 +113,6 @@ void SimplePhongIllumination(
             {
                 color = d_Spheres[x].GetColour();
             }
-
-
         }
     }
 

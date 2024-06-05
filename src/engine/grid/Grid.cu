@@ -31,7 +31,7 @@ __device__ bool Grid::Intersect(const Ray& ray, HitData& hitData)
         tGridEntry = glm::max(tMin, tGridEntry);
         tGridExit = glm::min(tMax, tGridExit);
         if (tGridEntry > tGridExit) 
-        { 
+        {
             return false;
         }
     }
