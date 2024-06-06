@@ -8,7 +8,7 @@ std::string FileIO::ReadFile(const std::string& path)
 	std::string stringifiedFile;
 	std::ifstream file;
 
-	// ensure ifstream objects can throw exceptions:
+	// Ensure ifstream objects can throw exceptions.
 	file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	try
 	{

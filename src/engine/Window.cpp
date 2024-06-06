@@ -73,7 +73,7 @@ void Window::MouseCallback(GLFWwindow* window, double xposIn, double yposIn)
     }
 
     float xoffset = xpos - _lastX;
-    float yoffset = _lastY - ypos; // reversed since y-coordinates go from bottom to top in OpenGL
+    float yoffset = _lastY - ypos; // Flipped since y-coords go from bottom to top in OpenGL.
 
     _lastX = xpos;
     _lastY = ypos;

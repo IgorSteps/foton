@@ -116,9 +116,9 @@ __host__ void Grid::ComputeGridSize()
     }
     _gridSize = _gridMax - _gridMin;
 
-    printf("Grid Min: (%f, %f, %f) \n", _gridMin.x, _gridMin.y, _gridMin.z);
+    /*printf("Grid Min: (%f, %f, %f) \n", _gridMin.x, _gridMin.y, _gridMin.z);
     printf("Grid Max: (%f, %f, %f) \n", _gridMax.x, _gridMax.y, _gridMax.z);
-    printf("Grid Size: (%f, %f, %f) \n", _gridSize.x, _gridSize.y, _gridSize.z);
+    printf("Grid Size: (%f, %f, %f) \n", _gridSize.x, _gridSize.y, _gridSize.z);*/
 }
 
 // ComputeGridResolution computes grid resolution based on the number of spheres and the scene overall volume.
@@ -130,8 +130,8 @@ __host__ void Grid::ComputeGridResolution()
     _gridResolution = glm::max(glm::floor(_gridSize * cubeRoot), glm::vec3(1)); // Make sure it is atleast 1.
     _cellSize = _gridSize / _gridResolution;
 
-    printf("Grid Resolution: (%f, %f, %f) \n", _gridResolution.x, _gridResolution.y, _gridResolution.z);
-    printf("Cell Size: (%f, %f, %f) \n", _cellSize.x, _cellSize.y, _cellSize.z);
+   /* printf("Grid Resolution: (%f, %f, %f) \n", _gridResolution.x, _gridResolution.y, _gridResolution.z);
+    printf("Cell Size: (%f, %f, %f) \n", _cellSize.x, _cellSize.y, _cellSize.z);*/
 }
 
 // Populate populates the grid cells with sphere indexes.
@@ -140,7 +140,7 @@ __host__ void Grid::Populate()
     _cellSize = _gridSize / _gridResolution;
     int numOfCells = _gridResolution.x * _gridResolution.y * _gridResolution.z;
     _h_Cells.resize(numOfCells);
-    printf("Number of cells: %d \n", _h_Cells.size());
+    //printf("Number of cells: %d \n", _h_Cells.size());
 
     for (int sphereIdx = 0; sphereIdx < _h_Spheres.size(); ++sphereIdx)
     {
@@ -164,7 +164,7 @@ __host__ void Grid::Populate()
                 for (int x = minCell.x; x <= maxCell.x; ++x)
                 {
                     int cellIdx = GetCellIndex(x,y,z);
-                    printf("Adding Sphere index '%d' to Cell at index '%d'\n", sphereIdx, cellIdx);
+                    //printf("Adding Sphere index '%d' to Cell at index '%d'\n", sphereIdx, cellIdx);
                     _h_Cells[cellIdx].Add(sphereIdx);
                 }
             }

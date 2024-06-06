@@ -28,8 +28,8 @@ void Sprite::Init()
     _buffer = std::make_unique<GLBuffer>(GL_FLOAT, GL_TRIANGLES);
 
     // Define attribute information
-    AttributeInfo positionAttrib(0, 2, 0); // Assuming location 0 for position
-    AttributeInfo texCoordAttrib(1, 2, 2); // Assuming location 1 for texture coords, with an offset of 2 floats
+    AttributeInfo positionAttrib(0, 2, 0);
+    AttributeInfo texCoordAttrib(1, 2, 2);
     _buffer->AddAttributeLocation(positionAttrib);
     _buffer->AddAttributeLocation(texCoordAttrib);
 

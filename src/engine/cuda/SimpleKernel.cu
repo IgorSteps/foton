@@ -50,7 +50,6 @@ void SimpleKernel(
 
 void Renderer::RayTraceSimple(float width, float height, void* cudaPtr, int numOfSpheres)
 {
-    // Launch CUDA kernel
     dim3 threadsPerBlock(16, 16);
     dim3 numBlocks(
         (width + threadsPerBlock.x - 1) / threadsPerBlock.x,

@@ -54,5 +54,6 @@
     <CudaCompile Include="src\engine\grid\Cell.cu" />
     <CudaCompile Include="src\engine\grid\Grid.cu" />
     <CudaCompile Include="src\engine\cuda\SimpleKernel.cu" />
+    <CudaCompile Include="src\engine\cuda\GridPhongKernel.cu" />
   </ItemGroup>
 </Project>

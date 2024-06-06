@@ -32,27 +32,22 @@ public:
     glm::vec3 GetUp() const;
     glm::vec3 GetFront() const;
     glm::vec3 GetRight() const;
-
     void ProcessKeyboard(CameraMovement direction, float deltaTime);
     void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
+
 private:
-    // Camera attributes.
     glm::vec3 _position;
     glm::vec3 _front;
     glm::vec3 _up;
     glm::vec3 _right;
     glm::vec3 _worldUp;
-
-    // Euler angles.
     float _yaw;
     float _pitch;
-
-    // Camera options.
     float _speed;
     float _sensitivity;
     float _zoom;
 
-    void updateCameraVectors();
+    void UpdateVectors();
 };
 
 extern EventQueue eventQueue;
