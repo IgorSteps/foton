@@ -4,7 +4,7 @@
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) 
 	: 
 	_front(glm::vec3(0.0f, 0.0f, -1.0f)),
-	_speed(2.5f),
+	_speed(5.5f),
 	_sensitivity(0.1f),
 	_zoom(45.0f)
 {

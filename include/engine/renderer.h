@@ -25,7 +25,7 @@ public:
     void UpdatePhong(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer);
     // UpdateGrid updates the PBO from ray tracing using Grid.
     void UpdateGrid(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer);
-
+    void UpdatePhongGrid(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer);
 private:
     std::vector<Sphere> h_Spheres;
     Camera* h_Camera;
@@ -44,5 +44,6 @@ private:
     // CUDA kernel wrappers:
     void RayTracePhong(float width, float height, void* cudaPtr, int numOfSpheres);
     void RayTraceGrid(float width, float height, void* cudaPtr);
+    void RayTracePhongGrid(float width, float height, void* cudaPtr);
     void RayTraceSimple(float width, float height, void* cudaPtr, int numOfSpheres);
 };

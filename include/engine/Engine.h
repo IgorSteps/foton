@@ -19,6 +19,7 @@ public:
 	void loadShaders();
 	void processQueue(float dt);
 	void Populate(int numSpheres, int spheresPerRow);
+	void PopulateNonUniform(int numSpheres);
 private:
 	std::unique_ptr<Window> _window;
 	std::unique_ptr<Camera> _camera;

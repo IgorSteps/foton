@@ -86,8 +86,8 @@ void Engine::init()
     // Camera:
     _camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 
-    // Spheres:
-    // For phong illumination demo:
+    // Populate with Spheres:
+    // For Phong Illumination demo:
     Sphere groundSphere(glm::vec3(0.0f, -501.0f, -1.0f), 500.0f, glm::vec3(0.96f, 0.96f, 0.86f), false);
     _spheres.push_back(groundSphere);
     Sphere lightSphere(glm::vec3(3.0f, 3.0f, -0.5f), 0.3f, glm::vec3(1.0f), true);
@@ -95,8 +95,9 @@ void Engine::init()
     Sphere mainSphere(glm::vec3(0.0f, 0.0f, -1.0f), 1.0f, glm::vec3(1.0f, 0.5f, 0.31f), false);
     _spheres.push_back(mainSphere);
 
-    // For grid demo:
-   // Populate(50, 10);
+    // For the Grid demo:
+    // Populate(80, 5);
+    // PopulateNonUniform(160);
 
     // Light:
     _light = new Light(glm::vec3(3.0f, 3.0f, -0.5f), glm::vec3(1.0f), 1.5);
@@ -104,7 +105,7 @@ void Engine::init()
     // Grid:
     _grid = new Grid(_spheres);
     
-    // Create Render system:
+    // Create Render:
     _renderer = std::make_unique<Renderer>(_camera.get(), _light, _spheres, _grid);
 }
 
@@ -117,8 +118,9 @@ void Engine::update(float dt)
 
     // Update PBO data with CUDA.
     _renderer->UpdatePhong(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
-   // _renderer->UpdateGrid(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
     //_renderer->UpdateSimple(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
+    //_renderer->UpdateGrid(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
+    //_renderer->UpdatePhongGrid(SCR_WIDTH, SCR_HEIGHT, _interopBuffer); // Doesn't work 100%.
 
     // Update Camera data on GPU.
     _renderer->UpdateCameraData(SCR_WIDTH, SCR_HEIGHT);
@@ -183,16 +185,55 @@ void  Engine::processQueue(float dt)
 
 void Engine::Populate(int numSpheres, int spheresPerRow)
 {
-    int numRows = numSpheres / 10;
+    int numRows = (numSpheres + spheresPerRow - 1) / spheresPerRow;
+    int spheresPlaced = 0;
+
     for (int row = 0; row < numRows; ++row)
     {
         for (int i = 0; i < spheresPerRow; ++i)
         {
+            if (spheresPlaced >= numSpheres) return;
+
             float x = (i - spheresPerRow / 2) * 3;
             float z = -1.0f - row * 3;
             glm::vec3 position(x, 0.0f, z);
-            glm::vec3 colour(0.5f + 0.5f * (i % 2), 0.5f * (row % 2), 0.5f + 0.5f * ((i + row) % 2)); // Some random colour.
+            glm::vec3 colour(1.0f, 0.0f, 0.0f);
             _spheres.push_back(Sphere(position, 1.0f, colour, false));
+
+            ++spheresPlaced;
+        }
+    }
+}
+
+void Engine::PopulateNonUniform(int numSpheres)
+{
+    int spheresPlaced = 0;
+    struct SphereCluster {
+        glm::vec3 center;
+        int count;
+        float spread;
+    };
+    std::vector<SphereCluster> clusters = {
+        {glm::vec3(-10.0f, 0.0f, -10.0f), numSpheres / 3, 2.0f},
+        {glm::vec3(10.0f, 0.0f, -10.0f), numSpheres / 3, 2.0f},
+        {glm::vec3(0.0f, 0.0f, 10.0f), numSpheres / 3, 5.0f}
+    };
+
+    for (const SphereCluster& c : clusters)
+    {
+        for (int i = 0; i < c.count; ++i)
+        {
+            if (spheresPlaced >= numSpheres) return;
+
+            // Random position.
+            float x = c.center.x + ((rand() % 1000) / 500.0f - 1.0f) * c.spread;
+            float y = c.center.y;
+            float z = c.center.z + ((rand() % 1000) / 500.0f - 1.0f) * c.spread;
+            glm::vec3 position(x, y, z);
+            glm::vec3 colour(1.0f, 0.0f, 0.0f);
+            _spheres.push_back(Sphere(position, 1.0f, colour, false));
+
+            ++spheresPlaced;
         }
     }
 }
