@@ -10,8 +10,6 @@ using std::chrono::duration_cast;
 using std::chrono::duration;
 using std::chrono::seconds;
 
-float OLD_SCR_WIDTH = 1200.0f;
-float OLD_SCR_HEIGHT = 800.0f;
 float SCR_WIDTH = 1200.0f;
 float SCR_HEIGHT = 800.0f;
 
@@ -157,10 +155,6 @@ void  Engine::processQueue(float dt)
         switch (event.type)
         {
         case EventType::WindowResize:
-            // Setup old screen dimensions.
-            OLD_SCR_WIDTH = SCR_WIDTH;
-            OLD_SCR_HEIGHT = SCR_HEIGHT;
-
             SCR_WIDTH = event.width;
             SCR_HEIGHT = event.height;
             break;

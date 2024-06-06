@@ -25,6 +25,7 @@ public:
     void UpdatePhong(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer);
     // UpdateGrid updates the PBO from ray tracing using Grid.
     void UpdateGrid(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer);
+    // Doesn't work 100%. UpdatePhongGrid updates the PBO from ray tracing using Grid and Phong Illumination.
     void UpdatePhongGrid(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer);
 private:
     std::vector<Sphere> h_Spheres;

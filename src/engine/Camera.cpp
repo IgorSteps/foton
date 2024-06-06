@@ -12,7 +12,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
 	_worldUp = up;
 	_yaw = yaw;
 	_pitch = pitch;
-	updateCameraVectors();
+	UpdateVectors();
 }
 
 float Camera::GetZoom() const
@@ -61,7 +61,7 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
     _yaw += xoffset;
     _pitch += yoffset;
 
-    // make sure that when pitch is out of bounds, screen doesn't get flipped
+    // Makes sure the screen doesn't get flipped if pitch is out of bounds .
     if (constrainPitch)
     {
         if (_pitch > 89.0f)
@@ -70,19 +70,17 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
             _pitch = -89.0f;
     }
 
-    // update Front, Right and Up Vectors using the updated Euler angles
-    updateCameraVectors();
+    UpdateVectors();
 }
 
-void Camera::updateCameraVectors()
+void Camera::UpdateVectors()
 {
-    // calculate the new Front vector
+    // Recalculate the vectors.
     glm::vec3 front;
     front.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
     front.y = sin(glm::radians(_pitch));
     front.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
     _front = glm::normalize(front);
-    // also re-calculate the Right and Up vector
-    _right = glm::normalize(glm::cross(_front, _worldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+    _right = glm::normalize(glm::cross(_front, _worldUp));
     _up = glm::normalize(glm::cross(_right, _front));
 }

@@ -82,17 +82,6 @@ void Renderer::UpdateGrid(float width, float height, std::unique_ptr<InteropBuff
     interopBuffer->UnmapCudaResource();
 }
 
-void Renderer::UpdatePhongGrid(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer)
-{
-    interopBuffer->MapCudaResource();
-
-    size_t size;
-    void* cudaPtr = interopBuffer->GetCudaMappedPtr(&size);
-    RayTracePhongGrid(width, height, cudaPtr);
-
-    interopBuffer->UnmapCudaResource();
-}
-
 // UpdateSimple updates the PBO from simpel ray tracing without anything. 
 void Renderer::UpdateSimple(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer)
 {
@@ -102,6 +91,17 @@ void Renderer::UpdateSimple(float width, float height, std::unique_ptr<InteropBu
     void* cudaPtr = interopBuffer->GetCudaMappedPtr(&size);
     int numSpheres = static_cast<int>(h_Spheres.size());
     RayTraceSimple(width, height, cudaPtr, numSpheres);
+
+    interopBuffer->UnmapCudaResource();
+}
+
+void Renderer::UpdatePhongGrid(float width, float height, std::unique_ptr<InteropBuffer>& interopBuffer)
+{
+    interopBuffer->MapCudaResource();
+
+    size_t size;
+    void* cudaPtr = interopBuffer->GetCudaMappedPtr(&size);
+    RayTracePhongGrid(width, height, cudaPtr);
 
     interopBuffer->UnmapCudaResource();
 }
