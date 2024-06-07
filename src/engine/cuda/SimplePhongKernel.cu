@@ -57,7 +57,7 @@ __device__ glm::vec3 ComputePhongIllumination(
 
     // Ambient.
     float ambientStrength = 0.1f;
-    glm::vec3 ambient = ambientStrength * light->color;
+    glm::vec3 ambient = ambientStrength * light->colour;
     if (inShadow) 
     {
         return ambient * objectColor;
@@ -66,7 +66,7 @@ __device__ glm::vec3 ComputePhongIllumination(
     {
         // Diffuse.
         float diff = max(glm::dot(hit.normal, lightDir), 0.0f);
-        glm::vec3 diffuse = diff * light->color;
+        glm::vec3 diffuse = diff * light->colour;
 
         glm::vec3 result = (diffuse + ambient) * objectColor;
         return result;

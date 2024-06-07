@@ -85,7 +85,7 @@ void Engine::init()
     _camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 
     // Populate with Spheres:
-    // For Phong Illumination demo:
+    // For the Phong Illumination demo:
     Sphere groundSphere(glm::vec3(0.0f, -501.0f, -1.0f), 500.0f, glm::vec3(0.96f, 0.96f, 0.86f), false);
     _spheres.push_back(groundSphere);
     Sphere lightSphere(glm::vec3(3.0f, 3.0f, -0.5f), 0.3f, glm::vec3(1.0f), true);
@@ -113,17 +113,20 @@ void Engine::update(float dt)
 
     // Update InteropBuffer with resized PBO.
     _interopBuffer->Update(SCR_WIDTH, SCR_HEIGHT);
+   
+    // Uncomment if you want a moving light
+    /*_light->Update(dt);
+    _renderer->UpdateLightData();*/
 
-    // Update PBO data with CUDA.
+    // Choose Kernel to run:
     _renderer->UpdatePhong(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
     //_renderer->UpdateSimple(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
     //_renderer->UpdateGrid(SCR_WIDTH, SCR_HEIGHT, _interopBuffer);
-    //_renderer->UpdatePhongGrid(SCR_WIDTH, SCR_HEIGHT, _interopBuffer); // Doesn't work 100%.
 
     // Update Camera data on GPU.
     _renderer->UpdateCameraData(SCR_WIDTH, SCR_HEIGHT);
 
-    // Update ray traced image: texture.
+    // Update ray-traced image's texture.
     _rayTracedImage->Update(SCR_WIDTH, SCR_HEIGHT);
 }
 
@@ -191,7 +194,7 @@ void Engine::Populate(int numSpheres, int spheresPerRow)
             float x = (i - spheresPerRow / 2) * 3;
             float z = -1.0f - row * 3;
             glm::vec3 position(x, 0.0f, z);
-            glm::vec3 colour(1.0f, 0.0f, 0.0f);
+            glm::vec3 colour(0.5f + 0.5f * (i % 2), 0.5f * (row % 2), 0.5f + 0.5f * ((i + row) % 2));
             _spheres.push_back(Sphere(position, 1.0f, colour, false));
 
             ++spheresPlaced;
@@ -224,7 +227,7 @@ void Engine::PopulateNonUniform(int numSpheres)
             float y = c.center.y;
             float z = c.center.z + ((rand() % 1000) / 500.0f - 1.0f) * c.spread;
             glm::vec3 position(x, y, z);
-            glm::vec3 colour(1.0f, 0.0f, 0.0f);
+            glm::vec3 colour(0.5f + 0.5f * (i % 2), 0.5f * (c.count % 2), 0.5f + 0.5f * ((i + c.count) % 2));
             _spheres.push_back(Sphere(position, 1.0f, colour, false));
 
             ++spheresPlaced;

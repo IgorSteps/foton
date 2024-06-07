@@ -50,7 +50,7 @@ void Renderer::UpdateLightData()
 {
     Light newLightData;
     newLightData.position = h_Light->position;
-    newLightData.color = h_Light->color;
+    newLightData.colour = h_Light->colour;
     newLightData.intensity = h_Light->intensity;
 
     CUDA_CHECK_ERROR(cudaMemcpy(d_Light, &newLightData, sizeof(Light), cudaMemcpyHostToDevice));
